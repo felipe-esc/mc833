@@ -1,3 +1,7 @@
+# Project executables (unix)
+*/server
+*/client
+
 # Prerequisites
 *.d
 

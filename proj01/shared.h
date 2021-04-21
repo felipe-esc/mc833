@@ -1,0 +1,19 @@
+#ifndef CLIENT_SERVER_SHARED
+#define CLIENT_SERVER_SHARED
+
+#define TIMEOUT 15000
+#define BUFFER_LEN 4096 // ?
+
+enum operations {
+    REGISTER,
+    ADD_EXPERIENCES,
+    LIST_BY_COURSE,
+    LIST_BY_SKILL,
+    LIST_BY_GRADUATION_YEAR,
+    LIST_ALL,
+    FIND_BY_EMAIL,
+    DELETE,
+    CLOSE
+};
+
+#endif
