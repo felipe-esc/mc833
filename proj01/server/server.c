@@ -8,12 +8,11 @@
 #include <string.h>
 
 #include "server.h"
-#include "../shared.h"
 
 int main(int argc, char *argv[]) {
 
     int sock_fd, new_fd;
-    int server_port = 3490;
+    int server_port = SERVER_DEFAULT_PORT;
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_size;
 
@@ -48,7 +47,7 @@ int main(int argc, char *argv[]) {
         printf("Listening failed!\n");
         exit(1);
     }
-    printf("Server listening on port: %d :)\n", &server_port);
+    printf("Server listening on port: %d :)\n", server_port);
         
     while (1) {
         addr_size = sizeof(client_addr);
@@ -79,18 +78,10 @@ void handle_messages(int curr_fd) {
     enum operations operation;
 
     while (1) {
-        // read until it fills the buffer
-        buffer_filled = 0;
-        while (buffer_filled != BUFFER_LEN) {
-            if ((len_read = recv(curr_fd, &buffer[buffer_filled], (BUFFER_LEN - buffer_filled), 0)) > 0) {
-                buffer_filled += len_read;
-            } else if (len_read == 0) {
-                printf("Client shut down connection.\n");
-                break;
-            } else {
-                printf("Error reading message!\n");
-                exit(1);
-            }
+        memset(buffer, 0, sizeof buffer);
+
+        if (receive_message(curr_fd, buffer) == 0) {
+            return;
         }
         
         // get operation
@@ -106,9 +97,10 @@ void handle_messages(int curr_fd) {
                 break;
             /* ( ... ) */
             case CLOSE_CONNECTION:
+                send_message(curr_fd, "[Server] Closing connection. ;) See ya!\n\0");
                 return;
             default:
-                printf("Unknown operation: %d\n", &operation);
+                printf("Unknown operation: %d\n", operation);
                 printf("Skipping...\n");
         }
     }

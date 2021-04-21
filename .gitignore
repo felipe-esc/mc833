@@ -1,6 +1,8 @@
 # Project executables (unix)
 */server
 */client
+*/client-proccess
+*/server-proccess
 
 # Prerequisites
 *.d

@@ -5,7 +5,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-// includes
+/* includes */
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -13,10 +13,12 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
+#include "../shared.h"
+
 /* constants */
 #define SERVER_MAX_CONNECTIONS 5
 
-/* structs */
+/* types */
 
 
 /* functions */
@@ -33,12 +35,14 @@ void handle_messages(int);
 #endif
 
 /* 
-Email: maria_silva@gmail.com
-Nome: Maria Sobrenome: Silva
-Residência: Campinas
-Formação Acadêmica: Ciência da Computação
-Ano de Formatura: 2015
-Habilidades: Análise de Dados, Internet das Coisas, Computação em Nuvem
-Experiência: (1) Estágio de 1 ano na Empresa X, onde trabalhei como analista de dados
-(2) Trabalhei com IoT e Computação em Nuvem por 5 anos na Empresa Y
+ *  Usuário:
+ *      Email <string[50]>: maria_silva@gmail.com 
+ *      Nome <string[30]>: Maria 
+ *      Sobrenome <string[170]: Silva
+ *      Residência <string[50]>: Campinas
+ *      Formação Acadêmica <string[50]>: Ciência da Computação
+ *      Ano de Formatura <int>: 2015
+ *      Habilidades <array<string[100]>>: Análise de Dados, Internet das Coisas, Computação em Nuvem
+ *      Experiência <array<string[250]>>: (1) Estágio de 1 ano na Empresa X, onde trabalhei como analista de dados
+ *      (2) Trabalhei com IoT e Computação em Nuvem por 5 anos na Empresa Y
 */
