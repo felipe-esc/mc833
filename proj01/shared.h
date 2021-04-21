@@ -2,18 +2,20 @@
 #define CLIENT_SERVER_SHARED
 
 #define TIMEOUT 15000
-#define BUFFER_LEN 4096 // ?
+#define BUFFER_LEN 4096
 
 enum operations {
-    REGISTER,
+    REGISTER_PROFILE,
     ADD_EXPERIENCES,
     LIST_BY_COURSE,
     LIST_BY_SKILL,
     LIST_BY_GRADUATION_YEAR,
     LIST_ALL,
     FIND_BY_EMAIL,
-    DELETE,
-    CLOSE
+    DELETE_PROFILE,
+    CLOSE_CONNECTION
 };
+
+// int send_message(int, char *) {}
 
 #endif

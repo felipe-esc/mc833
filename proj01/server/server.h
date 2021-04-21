@@ -21,14 +21,14 @@
 
 /* functions */
 void handle_messages(int);
-// void register_profile();
-// void add_new_experiences();
-// user** list_by_course();
-// user** list_by_skill();
-// user** list_by_graduation_year();
+// int register_profile(char *);
+// int add_new_experiences(char *);
+// user** list_by_course(char *);
+// user** list_by_skill(char *);
+// user** list_by_graduation_year(char *);
 // user** list_all();
-// user* find_by_email();
-// int delete_user(); // retornar 0 se ok 
+// user* find_by_email(char *);
+// int delete_user(char *); // retornar 0 se ok 
 
 #endif
 

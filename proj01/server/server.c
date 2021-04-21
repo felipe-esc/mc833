@@ -13,17 +13,15 @@
 int main(int argc, char *argv[]) {
 
     int sock_fd, new_fd;
-    int port = 3490; // todo: get from run
+    int server_port = 3490;
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_size;
 
     char data[BUFFER_LEN];
 
-    // checar se argv == 2, todo: adicionar PORT
-    /* if (argc != 2) {
-        fprintf(stderr,"");
-        exit(1);
-    } */
+    if (argc == 2) {
+        server_port = atoi(argv[1]);
+    }
 
     // create socket
     if ((sock_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
@@ -35,7 +33,7 @@ int main(int argc, char *argv[]) {
     // configure
     memset(&server_addr, 0, sizeof server_addr);
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(port);
+    server_addr.sin_port = htons(server_port);
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     // bind
@@ -50,18 +48,20 @@ int main(int argc, char *argv[]) {
         printf("Listening failed!\n");
         exit(1);
     }
-    printf("Server listening...\n");
+    printf("Server listening on port: %d :)\n", &server_port);
         
     while (1) {
         addr_size = sizeof(client_addr);
         if ((new_fd = accept(sock_fd, (struct sockaddr *) &client_addr, &addr_size)) != -1) {
-            printf("Connection accepted!");
+            printf("Connection accepted!\n");
 
             if (!fork()) { // 0 -> child proccess
                 close(sock_fd);
                 
                 handle_messages(new_fd);
-
+                
+                printf("Closing connection..\n");
+                // todo: send bye to client
                 close(new_fd);
                 exit(0);
             }
@@ -74,9 +74,42 @@ int main(int argc, char *argv[]) {
 
 void handle_messages(int curr_fd) {
     
-    char data[BUFFER_LEN];
-    int shift;
+    char buffer[BUFFER_LEN];
+    int shift = 0, buffer_filled, len_read;
     enum operations operation;
 
+    while (1) {
+        // read until it fills the buffer
+        buffer_filled = 0;
+        while (buffer_filled != BUFFER_LEN) {
+            if ((len_read = recv(curr_fd, &buffer[buffer_filled], (BUFFER_LEN - buffer_filled), 0)) > 0) {
+                buffer_filled += len_read;
+            } else if (len_read == 0) {
+                printf("Client shut down connection.\n");
+                break;
+            } else {
+                printf("Error reading message!\n");
+                exit(1);
+            }
+        }
+        
+        // get operation
+        shift = sizeof operation;
+        memcpy(&operation, buffer, sizeof operation);
 
+        // handle it
+        switch (operation) {
+            // todo: enviar msg de feedback ao final
+            case REGISTER_PROFILE:
+                printf("Adding new profile\n");
+                // register_profile(&buffer[shift]);
+                break;
+            /* ( ... ) */
+            case CLOSE_CONNECTION:
+                return;
+            default:
+                printf("Unknown operation: %d\n", &operation);
+                printf("Skipping...\n");
+        }
+    }
 }
