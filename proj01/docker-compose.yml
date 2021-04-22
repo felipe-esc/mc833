@@ -1,0 +1,9 @@
+version: "3"
+services:
+  mongodb:
+    network_mode: "host"
+    restart: always
+    image: mongo
+    command: mongod --port 27017
+    ports:
+      - 27017:27017
