@@ -1,11 +1,18 @@
-all: server.o client.o shared.o
-	gcc -o client-proccess client/client.o shared.o
-	gcc -o server-proccess server/server.o shared.o
+all: server client
+
+server: server.o shared.o
+	gcc -o server-proccess server/server.o shared.o server/db.o \
+	-I/usr/include/libbson-1.0 -I/usr/include/libmongoc-1.0 -I/usr/local/include/libbson-1.0 -I/usr/local/include/libmongoc-1.0 \
+	-lmongoc-1.0 -lbson-1.0
 
 server.o:
 	cd server; \
 	make clean; \
-	make server.o
+	make server.o; \
+	make db.o
+
+client: client.o shared.o
+	gcc -o client-proccess client/client.o shared.o
 
 client.o:
 	cd client; \

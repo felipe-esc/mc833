@@ -10,10 +10,10 @@
 
 int send_message(int fd, char *msg) {
 
-    int len_sent, total_sent = 0, msg_len;
+    int len_sent, total_sent = 0;
     char buffer[BUFFER_LEN];
     
-    memcpy(buffer, msg, sizeof msg);
+    memcpy(buffer, msg, strlen(msg));
     while (total_sent < BUFFER_LEN) {
         if ((len_sent = send(fd, &buffer[total_sent], (BUFFER_LEN - total_sent), 0)) > 0) {
             total_sent += len_sent;

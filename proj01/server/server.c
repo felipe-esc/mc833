@@ -1,13 +1,14 @@
-/* 
+/*
  * BlaBla
- */ 
+ */
 
-#include <errno.h>
+// #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "server.h"
+#include "db.h"
 
 int main(int argc, char *argv[]) {
 
@@ -15,12 +16,15 @@ int main(int argc, char *argv[]) {
     int server_port = SERVER_DEFAULT_PORT;
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_size;
+    mongoc_client_t *db_client;
 
     char data[BUFFER_LEN];
 
     if (argc == 2) {
         server_port = atoi(argv[1]);
     }
+
+    db_client = connect_db();
 
     // create socket
     if ((sock_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
@@ -57,10 +61,9 @@ int main(int argc, char *argv[]) {
             if (!fork()) { // 0 -> child proccess
                 close(sock_fd);
                 
-                handle_messages(new_fd);
+                handle_messages(new_fd, db_client);
                 
                 printf("Closing connection..\n");
-                // todo: send bye to client
                 close(new_fd);
                 exit(0);
             }
@@ -68,10 +71,13 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // criar um fluxo pra sair do while
+    disconnect_db(db_client);
+
     return 0;
 }
 
-void handle_messages(int curr_fd) {
+void handle_messages(int curr_fd, mongoc_client_t *db_client) {
     
     char buffer[BUFFER_LEN];
     int shift = 0, buffer_filled, len_read;
@@ -95,13 +101,37 @@ void handle_messages(int curr_fd) {
                 printf("Adding new profile\n");
                 // register_profile(&buffer[shift]);
                 break;
-            /* ( ... ) */
+            case ADD_EXPERIENCES:
+                // add_experiences();
+                break;
+            case LIST_BY_COURSE:
+                // list_by_course();
+                break;
+            case LIST_BY_SKILL:
+                // list_by_skill():
+                break;
+            case LIST_BY_GRADUATION_YEAR:
+                // list_by_graduation_year();
+                break;
+            case LIST_ALL:
+                // list_all():
+                break;
+            case FIND_BY_EMAIL:
+                // find_by_email();
+                break;
+            case DELETE_PROFILE:
+                // delete_profile();
+                break;
             case CLOSE_CONNECTION:
-                send_message(curr_fd, "[Server] Closing connection. ;) See ya!\n\0");
+                send_message(curr_fd, "[Server] Closing connection. ;) See ya!\n");
                 return;
             default:
                 printf("Unknown operation: %d\n", operation);
                 printf("Skipping...\n");
         }
     }
+}
+
+bool check_admin(char *username, char *password) {
+    return strcmp(username, SERVER_ADMIN_USERNAME) == 0 && strcmp(password, SERVER_ADMIN_PASSWORD) == 0;
 }

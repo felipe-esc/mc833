@@ -59,12 +59,33 @@ void operate(int curr_fd) {
     int option;
 
     while (1) {
-        printf("Choose an option[0-9]: (9 for help)\n");
+        printf("Choose an option[0-9]: (Choose 9 for help)\n");
         scanf("%d", &option);
 
         switch (option) {
             case REGISTER_PROFILE:
                 // register_profile();
+                break;
+            case ADD_EXPERIENCES:
+                // add_experiences();
+                break;
+            case LIST_BY_COURSE:
+                // list_by_course();
+                break;
+            case LIST_BY_SKILL:
+                // list_by_skill():
+                break;
+            case LIST_BY_GRADUATION_YEAR:
+                // list_by_graduation_year();
+                break;
+            case LIST_ALL:
+                // list_all():
+                break;
+            case FIND_BY_EMAIL:
+                // find_by_email();
+                break;
+            case DELETE_PROFILE:
+                // delete_profile();
                 break;
             case CLOSE_CONNECTION:
                 close_connection(curr_fd);
@@ -86,7 +107,7 @@ void close_connection(int curr_fd) {
     send_message(curr_fd, send_buffer);
     receive_message(curr_fd, receive_buffer);
 
-    printf("%s", receive_buffer);
+    printf("%s\n", receive_buffer);
 
     return;
 }
