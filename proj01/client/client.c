@@ -130,3 +130,42 @@ void print_help() {
     
     printf("%s\n", help);
 }
+
+void register_profile(int curr_fd) {
+    // pedir dados
+
+    // converter dados
+
+    // enviar mensagem
+
+    // receber feedback
+
+}
+
+void add_new_experiences(int curr_fd) {
+
+}
+
+void list_by_course(int curr_fd) {
+
+}
+
+void list_by_skill(int curr_fd) {
+
+}
+
+void list_by_graduation_year(int curr_fd) {
+
+}
+
+void list_all(int curr_fd) {
+
+}
+
+void find_by_email(int curr_fd) {
+
+}
+
+void delete_user(int curr_fd) {
+
+}

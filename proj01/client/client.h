@@ -20,14 +20,14 @@
 /* function defs */
 void operate(int);
 void print_help();
-// int register_profile(char *);
-// int add_new_experiences(char *);
-// void list_by_course(char *);
-// void list_by_skill(char *);
-// void list_by_graduation_year(char *);
-// void list_all();
-// void find_by_email(char *);
-// int delete_user(char *);
+void register_profile(int);
+void add_new_experiences(int);
+void list_by_course(int);
+void list_by_skill(int);
+void list_by_graduation_year(int);
+void list_all(int);
+void find_by_email(int);
+void delete_user(int);
 void close_connection(int);
 
 #endif

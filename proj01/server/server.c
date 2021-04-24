@@ -135,3 +135,43 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
 bool check_admin(char *username, char *password) {
     return strcmp(username, SERVER_ADMIN_USERNAME) == 0 && strcmp(password, SERVER_ADMIN_PASSWORD) == 0;
 }
+
+void register_profile(char *msg, mongoc_client_t *client) {
+    // ver se é admin, senão for admin já envia um feedback
+    
+    // separar dados
+
+    // salvar
+
+    // feedback ao client
+
+}
+
+void add_new_experiences(char *msg, mongoc_client_t *db_client) {
+
+}
+
+void list_by_course(char *msg, mongoc_client_t *db_client) {
+
+}
+
+void list_by_skill(char *msg, mongoc_client_t *db_client) {
+
+}
+
+void list_by_graduation_year(char *msg, mongoc_client_t *db_client) {
+
+}
+
+void list_all(mongoc_client_t *db_client) {
+
+}
+
+void find_by_email(char *msg, mongoc_client_t *db_client) {
+
+}
+
+void delete_user(char *msg, mongoc_client_t *db_client) {
+
+}
+

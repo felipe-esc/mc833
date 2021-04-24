@@ -45,3 +45,47 @@ mongoc_client_t* disconnect_db(mongoc_client_t* client) {
 
     return NULL;
 }
+
+int db_register_profile(char *msg, mongoc_client_t *client) {
+
+    // salvar
+
+    // retornar se sucesso ou não
+
+    return 0;
+}
+
+char* db_add_new_experiences(char *msg, mongoc_client_t *client) {
+
+    return NULL;
+}
+
+char* db_list_by_course(char *msg, mongoc_client_t *client) {
+
+    return NULL;
+}
+
+char* db_list_by_skill(char *msg, mongoc_client_t *client) {
+
+    return NULL;
+}
+
+char* db_list_by_graduation_year(char *msg, mongoc_client_t *client) {
+
+    return NULL;
+}
+
+char* db_list_all(mongoc_client_t *client) {
+
+    return NULL;
+}
+
+char* db_find_by_email(char *msg, mongoc_client_t *client) {
+
+    return NULL;
+}
+
+int db_delete_user(char *msg, mongoc_client_t *client) {
+
+    return 0;
+}

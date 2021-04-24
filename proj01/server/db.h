@@ -21,13 +21,13 @@ mongoc_client_t* disconnect_db(mongoc_client_t*);
 // >> db.database.find({A: /abc def/i });
 // >> db.users.findOne({"username" : {$regex : ".*son.*"}});
 
-// int register_profile(char *);
-// int add_new_experiences(char *);
-// char* list_by_course(char *);
-// char* list_by_skill(char *);
-// char* list_by_graduation_year(char *);
-// char* list_all();
-// char* find_by_email(char *);
-// int delete_user(char *);
+int db_register_profile(char *, mongoc_client_t*);
+char* db_add_new_experiences(char *, mongoc_client_t*);
+char* db_list_by_course(char *, mongoc_client_t*);
+char* db_list_by_skill(char *, mongoc_client_t*);
+char* db_list_by_graduation_year(char *, mongoc_client_t*);
+char* db_list_all(mongoc_client_t*);
+char* db_find_by_email(char *, mongoc_client_t*);
+int db_delete_user(char *, mongoc_client_t*);
 
 #endif

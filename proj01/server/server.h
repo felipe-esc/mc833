@@ -27,15 +27,16 @@
 
 /* functions */
 void handle_messages(int, mongoc_client_t*);
-// int register_profile(char *, mongoc_client_t*);
-// int add_new_experiences(char *, mongoc_client_t*);
-// char* list_by_course(char *, mongoc_client_t*); // NULL se não achar
-// char* list_by_skill(char *, mongoc_client_t*);
-// char* list_by_graduation_year(char *, mongoc_client_t*);
-// char* list_all(mongoc_client_t*);
-// char* find_by_email(char *, mongoc_client_t*);
-// int delete_user(char *, mongoc_client_t*); // retornar 0 se ok 
 bool check_admin(char *, char *);
+void register_profile(char *, mongoc_client_t*);
+void add_new_experiences(char *, mongoc_client_t*);
+void list_by_course(char *, mongoc_client_t*);
+void list_by_skill(char *, mongoc_client_t*);
+void list_by_graduation_year(char *, mongoc_client_t*);
+void list_all(mongoc_client_t*);
+void find_by_email(char *, mongoc_client_t*);
+void delete_user(char *, mongoc_client_t*);
+
 
 #endif
 
