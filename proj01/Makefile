@@ -23,4 +23,4 @@ shared.o: shared.c shared.h
 	gcc shared.c -o shared.o -c
 
 clean:
-	rm client-proccess server-proccess client/client.o server/server.o *.o
+	rm *-proccess *.o */*.o
