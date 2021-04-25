@@ -64,28 +64,28 @@ void operate(int curr_fd) {
 
         switch (option) {
             case REGISTER_PROFILE:
-                // register_profile();
+                register_profile(curr_fd);
                 break;
             case ADD_EXPERIENCES:
-                // add_experiences();
+                add_new_experiences(curr_fd);
                 break;
             case LIST_BY_COURSE:
-                // list_by_course();
+                list_by_course(curr_fd);
                 break;
             case LIST_BY_SKILL:
-                // list_by_skill():
+                list_by_skill(curr_fd);
                 break;
             case LIST_BY_GRADUATION_YEAR:
-                // list_by_graduation_year();
+                list_by_graduation_year(curr_fd);
                 break;
             case LIST_ALL:
-                // list_all():
+                list_all(curr_fd);
                 break;
             case FIND_BY_EMAIL:
-                // find_by_email();
+                find_by_email(curr_fd);
                 break;
             case DELETE_PROFILE:
-                // delete_profile();
+                delete_profile(curr_fd);
                 break;
             case CLOSE_CONNECTION:
                 close_connection(curr_fd);
@@ -132,9 +132,48 @@ void print_help() {
 }
 
 void register_profile(int curr_fd) {
+
+    char username[20], email[50], name[30], surname[200], residence[50], graduation[50], skills[500], add_xp = 'y';
+    char **experiences;
+    int graduation_year, xp_size = 0;
+    bson_t *document;
     // pedir dados
+    printf("Please, identify yourself:\n");
+    scanf(" %[^\n]s", username);
+    
+    printf("\nNow insert the user data you want to save\n");
+    printf("Email: \n");
+    scanf(" %[^\n]s", email);
+    printf("Name: \n");
+    scanf(" %[^\n]s", name);
+    printf("Surname: \n");
+    scanf(" %[^\n]s", surname);
+    printf("Residence: \n");
+    scanf(" %[^\n]s", residence);
+    printf("Graduation: \n");
+    scanf(" %[^\n]s", graduation);
+    printf("Graduation year: \n");
+    scanf("%d", graduation_year);
+    printf("Skills: \n");
+    scanf(" %[^\n]s", skills);
+    // fazer um array de strings
+    /*
+    printf("Previous experiences: \n");
+    experiences = malloc(sizeof (char) * 500);
+    while (add_xp == "y") {
+        xp_size++;
+        experiences = realloc((xp_size) * sizeof (char) * 500);
+        scanf(" %[^\n]s", experiences[xp_size]);
+        printf("Add another experience? (y/n)\n");
+        scanf("%c", add_xp);
+    }
+    */
+
+    // document = bson_new();
+    // BSON_APPEND_UTF8(&document, "name", name);
 
     // converter dados
+    // user = bson_as_canonical_extended_json(document, NULL);
 
     // enviar mensagem
 
@@ -143,29 +182,70 @@ void register_profile(int curr_fd) {
 }
 
 void add_new_experiences(int curr_fd) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // pedir dados
 
+    // converter
+
+    // enviar
+
+    // feedback
 }
 
 void list_by_course(int curr_fd) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // pedir curso
+
+    // enviar
+
+    // esperar resposta ou feedback
 
 }
 
 void list_by_skill(int curr_fd) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // pedir habilidade
+
+    // enviar
+
+    // esperar resposta ou feedback
 
 }
 
 void list_by_graduation_year(int curr_fd) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // pedir ano
+
+    // enviar
+
+    // esperar resposta ou feedback
 
 }
 
 void list_all(int curr_fd) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // enviar request
+
+    // esperar resposta ou feedback
 
 }
 
 void find_by_email(int curr_fd) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // pedir email
+
+    // enviar
+
+    // esperar resposta ou feedback
 
 }
 
-void delete_user(int curr_fd) {
+void delete_profile(int curr_fd) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // pedir email
+
+    // enviar
+
+    // esperar resposta ou feedback
 
 }

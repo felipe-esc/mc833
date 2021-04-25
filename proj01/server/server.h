@@ -20,22 +20,21 @@
 /* constants */
 #define SERVER_MAX_CONNECTIONS 5
 #define SERVER_ADMIN_USERNAME "admin"
-#define SERVER_ADMIN_PASSWORD "1234"
 
 /* types */
 
 
 /* functions */
 void handle_messages(int, mongoc_client_t*);
-bool check_admin(char *, char *);
-void register_profile(char *, mongoc_client_t*);
-void add_new_experiences(char *, mongoc_client_t*);
-void list_by_course(char *, mongoc_client_t*);
-void list_by_skill(char *, mongoc_client_t*);
-void list_by_graduation_year(char *, mongoc_client_t*);
-void list_all(mongoc_client_t*);
-void find_by_email(char *, mongoc_client_t*);
-void delete_user(char *, mongoc_client_t*);
+bool check_admin(char *);
+void register_profile(int, char *, mongoc_client_t*);
+void add_new_experiences(int, char *, mongoc_client_t*);
+void list_by_course(int, char *, mongoc_client_t*);
+void list_by_skill(int, char *, mongoc_client_t*);
+void list_by_graduation_year(int, char *, mongoc_client_t*);
+void list_all(int, mongoc_client_t*);
+void find_by_email(int, char *, mongoc_client_t*);
+void delete_profile(int, char *, mongoc_client_t*);
 
 
 #endif
@@ -44,7 +43,7 @@ void delete_user(char *, mongoc_client_t*);
  *  Usuário:
  *      Email <string[50]>: maria_silva@gmail.com 
  *      Nome <string[30]>: Maria 
- *      Sobrenome <string[170]: Silva
+ *      Sobrenome <string[200]: Silva
  *      Residência <string[50]>: Campinas
  *      Formação Acadêmica <string[50]>: Ciência da Computação
  *      Ano de Formatura <int>: 2015

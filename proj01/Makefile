@@ -12,7 +12,9 @@ server.o:
 	make db.o
 
 client: client.o shared.o
-	gcc -o client-proccess client/client.o shared.o
+	gcc -o client-proccess client/client.o shared.o \
+	-I/usr/include/libbson-1.0 -I/usr/include/libmongoc-1.0 -I/usr/local/include/libbson-1.0 -I/usr/local/include/libmongoc-1.0 \
+	-lmongoc-1.0 -lbson-1.0
 
 client.o:
 	cd client; \

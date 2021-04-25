@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <bson/bson.h>
 
 #include "../shared.h"
 
@@ -27,7 +28,7 @@ void list_by_skill(int);
 void list_by_graduation_year(int);
 void list_all(int);
 void find_by_email(int);
-void delete_user(int);
+void delete_profile(int);
 void close_connection(int);
 
 #endif

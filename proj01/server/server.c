@@ -73,6 +73,7 @@ int main(int argc, char *argv[]) {
 
     // criar um fluxo pra sair do while
     disconnect_db(db_client);
+    close(sock_fd);
 
     return 0;
 }
@@ -94,33 +95,32 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
         shift = sizeof operation;
         memcpy(&operation, buffer, sizeof operation);
 
-        // handle it
+        // handles it
         switch (operation) {
-            // todo: enviar msg de feedback ao final
             case REGISTER_PROFILE:
                 printf("Adding new profile\n");
-                // register_profile(&buffer[shift]);
+                register_profile(curr_fd, &buffer[shift], db_client);
                 break;
             case ADD_EXPERIENCES:
-                // add_experiences();
+                add_new_experiences(curr_fd, &buffer[shift], db_client);
                 break;
             case LIST_BY_COURSE:
-                // list_by_course();
+                list_by_course(curr_fd, &buffer[shift], db_client);
                 break;
             case LIST_BY_SKILL:
-                // list_by_skill():
+                list_by_skill(curr_fd, &buffer[shift], db_client);
                 break;
             case LIST_BY_GRADUATION_YEAR:
-                // list_by_graduation_year();
+                list_by_graduation_year(curr_fd, &buffer[shift], db_client);
                 break;
             case LIST_ALL:
-                // list_all():
+                list_all(curr_fd, db_client);
                 break;
             case FIND_BY_EMAIL:
-                // find_by_email();
+                find_by_email(curr_fd, &buffer[shift], db_client);
                 break;
             case DELETE_PROFILE:
-                // delete_profile();
+                delete_profile(curr_fd, &buffer[shift], db_client);
                 break;
             case CLOSE_CONNECTION:
                 send_message(curr_fd, "[Server] Closing connection. ;) See ya!\n");
@@ -132,11 +132,12 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
     }
 }
 
-bool check_admin(char *username, char *password) {
-    return strcmp(username, SERVER_ADMIN_USERNAME) == 0 && strcmp(password, SERVER_ADMIN_PASSWORD) == 0;
+bool check_admin(char *username) {
+    return strcmp(username, SERVER_ADMIN_USERNAME) == 0;
 }
 
-void register_profile(char *msg, mongoc_client_t *client) {
+void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
+    printf("TODO: Implementar - %s\n", __func__);
     // ver se é admin, senão for admin já envia um feedback
     
     // separar dados
@@ -147,31 +148,73 @@ void register_profile(char *msg, mongoc_client_t *client) {
 
 }
 
-void add_new_experiences(char *msg, mongoc_client_t *db_client) {
+void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // ver se é admin, senão for admin já envia um feedback
+    
+    // separar dados
+
+    // salvar
+
+    // feedback ao client
+}
+
+void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // separar string
+
+    // fazer a busca no db
+
+    // enviar resposta ou feedback ao client
 
 }
 
-void list_by_course(char *msg, mongoc_client_t *db_client) {
+void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // separar string
+
+    // fazer a busca no db
+
+    // enviar resposta ou feedback ao client
 
 }
 
-void list_by_skill(char *msg, mongoc_client_t *db_client) {
+void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // separar string
+
+    // fazer a busca no db
+
+    // enviar resposta ou feedback ao client
 
 }
 
-void list_by_graduation_year(char *msg, mongoc_client_t *db_client) {
+void list_all(int curr_fd, mongoc_client_t *db_client) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // fazer a busca no db
+
+    // enviar resposta ou feedback ao client
 
 }
 
-void list_all(mongoc_client_t *db_client) {
+void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // separar string
+
+    // fazer a busca no db
+
+    // enviar resposta ou feedback ao client
 
 }
 
-void find_by_email(char *msg, mongoc_client_t *db_client) {
+void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
+    printf("TODO: Implementar - %s\n", __func__);
+    // ver se é admin, senão for admin já envia um feedback
+    
+    // separar dados
 
-}
+    // salvar
 
-void delete_user(char *msg, mongoc_client_t *db_client) {
-
+    // feedback ao client
 }
 

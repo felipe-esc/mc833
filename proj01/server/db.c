@@ -47,6 +47,7 @@ mongoc_client_t* disconnect_db(mongoc_client_t* client) {
 }
 
 int db_register_profile(char *msg, mongoc_client_t *client) {
+    printf("TODO: Implementar - %s\n", __func__);
 
     // salvar
 
@@ -55,37 +56,62 @@ int db_register_profile(char *msg, mongoc_client_t *client) {
     return 0;
 }
 
-char* db_add_new_experiences(char *msg, mongoc_client_t *client) {
+char* db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
+    printf("TODO: Implementar - %s\n", __func__);
+
+    // tentar inserir skill
+
+    // retornar se sucesso ou não
 
     return NULL;
 }
 
-char* db_list_by_course(char *msg, mongoc_client_t *client) {
+char* db_list_by_course(char *course, mongoc_client_t *client) {
+    printf("TODO: Implementar - %s\n", __func__);
+
+    // busca por curso
 
     return NULL;
 }
 
-char* db_list_by_skill(char *msg, mongoc_client_t *client) {
+char* db_list_by_skill(char *skill, mongoc_client_t *client) {
+    printf("TODO: Implementar - %s\n", __func__);
+
+    // busca por skill
 
     return NULL;
 }
 
-char* db_list_by_graduation_year(char *msg, mongoc_client_t *client) {
+char* db_list_by_graduation_year(int year, mongoc_client_t *client) {
+    printf("TODO: Implementar - %s\n", __func__);
+
+    // busca por ano de graduação
 
     return NULL;
 }
 
 char* db_list_all(mongoc_client_t *client) {
+    printf("TODO: Implementar - %s\n", __func__);
+
+    // lista todos
 
     return NULL;
 }
 
-char* db_find_by_email(char *msg, mongoc_client_t *client) {
+char* db_find_by_email(char *email, mongoc_client_t *client) {
+    printf("TODO: Implementar - %s\n", __func__);
+
+    // busca por email
 
     return NULL;
 }
 
-int db_delete_user(char *msg, mongoc_client_t *client) {
+int db_delete_profile(char *email, mongoc_client_t *client) {
+    printf("TODO: Implementar - %s\n", __func__);
+
+    // tenta deletar
+
+    // retorno sucesso ou não
 
     return 0;
 }
