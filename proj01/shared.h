@@ -1,3 +1,7 @@
+/*
+ * Blabla
+ */
+
 #ifndef CLIENT_SERVER_SHARED
 #define CLIENT_SERVER_SHARED
 
@@ -7,6 +11,8 @@
 
 #define TIMEOUT 15000
 #define BUFFER_LEN 4096
+#define USERNAME_LEN 20
+#define EMAIL_LEN 100
 
 #define SERVER_DEFAULT_PORT 3490
 #define LOCALHOST "127.0.0.1"
@@ -23,7 +29,7 @@ enum operations {
     CLOSE_CONNECTION            // 8
 };
 
-int send_message(int, char *);
-int receive_message(int, char *);
+void send_message(int, char *, int);
+void receive_message(int, char *);
 
 #endif

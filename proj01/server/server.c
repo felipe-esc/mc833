@@ -1,5 +1,7 @@
 /*
  * BlaBla
+ * Refs:
+ *  -   http://beej.us/guide/bgnet/translations/bgnet_ptbr.pdf
  */
 
 // #include <errno.h>
@@ -16,15 +18,20 @@ int main(int argc, char *argv[]) {
     int server_port = SERVER_DEFAULT_PORT;
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_size;
+    char *mongo_uri = NULL;
     mongoc_client_t *db_client;
 
     char data[BUFFER_LEN];
 
-    if (argc == 2) {
+    if (argc >= 2) {
         server_port = atoi(argv[1]);
     }
+    if (argc == 3) {
+        mongo_uri = malloc(sizeof(char) * 100);
+        memcpy(mongo_uri, argv[2], strlen(argv[2]));
+    }
 
-    db_client = connect_db();
+    db_client = connect_db(mongo_uri);
 
     // create socket
     if ((sock_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
@@ -87,9 +94,7 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
     while (1) {
         memset(buffer, 0, sizeof buffer);
 
-        if (receive_message(curr_fd, buffer) == 0) {
-            return;
-        }
+        receive_message(curr_fd, buffer);
         
         // get operation
         shift = sizeof operation;
@@ -98,7 +103,6 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
         // handles it
         switch (operation) {
             case REGISTER_PROFILE:
-                printf("Adding new profile\n");
                 register_profile(curr_fd, &buffer[shift], db_client);
                 break;
             case ADD_EXPERIENCES:
@@ -123,7 +127,7 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
                 delete_profile(curr_fd, &buffer[shift], db_client);
                 break;
             case CLOSE_CONNECTION:
-                send_message(curr_fd, "[Server] Closing connection. ;) See ya!\n");
+                send_message(curr_fd, "[SERVER] Closing connection. ;) See ya!\n\0", -1);
                 return;
             default:
                 printf("Unknown operation: %d\n", operation);
@@ -133,19 +137,33 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
 }
 
 bool check_admin(char *username) {
+    // not working right
     return strcmp(username, SERVER_ADMIN_USERNAME) == 0;
 }
 
 void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
-    printf("TODO: Implementar - %s\n", __func__);
-    // ver se é admin, senão for admin já envia um feedback
     
-    // separar dados
+    char username[USERNAME_LEN];
+    int shift;
 
-    // salvar
+    memset(username, 0, sizeof username);
+    memcpy(username, msg, sizeof(username));
+    if (!check_admin(username)) {
+        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
+        printf("User couldn't add profile, permission denied!\n");
+        return;
+    }
+    printf("Adding new profile\n");
 
-    // feedback ao client
-
+    shift = sizeof(char) * USERNAME_LEN;
+    
+    if (db_register_profile(&msg[shift], client) < 0) {
+        send_message(curr_fd, "[SERVER] An unexpected error ocurred! Could not save profile :/\n\0", -1);
+        printf("Failed saving new profile.\n");
+        return;
+    }
+    
+    send_message(curr_fd, "[SERVER] Profile successfully inserted! ;)\n\0", -1);
 }
 
 void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
@@ -190,11 +208,12 @@ void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client)
 }
 
 void list_all(int curr_fd, mongoc_client_t *db_client) {
-    printf("TODO: Implementar - %s\n", __func__);
-    // fazer a busca no db
 
-    // enviar resposta ou feedback ao client
+    char list[BUFFER_LEN];
 
+    db_list_all(list, db_client);
+
+    send_message(curr_fd, list, sizeof(list));
 }
 
 void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client) {

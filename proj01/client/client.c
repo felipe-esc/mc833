@@ -1,5 +1,7 @@
 /*
  * Blabla
+ * Refs:
+ *  -   http://beej.us/guide/bgnet/translations/bgnet_ptbr.pdf
  */
 
 #include <stdio.h>
@@ -46,7 +48,7 @@ int main(int argc, char *argv[]) {
         printf("Failed to connect with server!\n");
         exit(1);
     }
-    printf("Connected with server!\n");
+    printf("Connected with server!\n\n");
 
     operate(sock_fd);
 
@@ -93,7 +95,7 @@ void operate(int curr_fd) {
             default:
                 print_help();
         }
-        printf("Do you need anything else? ");
+        printf("\nDo you need anything else? ");
     }
 }
 
@@ -104,7 +106,8 @@ void close_connection(int curr_fd) {
 
     memcpy(send_buffer, &op, sizeof(int));
     
-    send_message(curr_fd, send_buffer);
+    send_message(curr_fd, send_buffer, sizeof send_buffer);
+
     receive_message(curr_fd, receive_buffer);
 
     printf("%s\n", receive_buffer);
@@ -114,7 +117,7 @@ void close_connection(int curr_fd) {
 
 void print_help() {
     
-    printf("HELP! I NEED SOMEBODY'S HELP!\n\n");
+    printf("\nHELP! I NEED SOMEBODY'S HELP!\n\n");
 
     const char *help = "Available options:\n"
                         "\t\t0 - Register new profile\n"
@@ -133,57 +136,97 @@ void print_help() {
 
 void register_profile(int curr_fd) {
 
-    char username[20], email[50], name[30], surname[200], residence[50], graduation[50], skills[500], add_xp = 'y';
-    char **experiences;
-    int graduation_year, xp_size = 0;
-    bson_t *document;
-    // pedir dados
-    printf("Please, identify yourself:\n");
+    char username[USERNAME_LEN], email[EMAIL_LEN], name[30], surname[200], residence[50], graduation[50], skills[200], graduation_year[5];
+    char **experiences, *profile, add_xp = 'y', buf[200], msg[BUFFER_LEN], feedback[BUFFER_LEN], *p;
+    const char *key;
+    int xp_size = 0, op = REGISTER_PROFILE, shift;
+    bson_t *document, child;
+    size_t keylen;
+
+    // ask for data
+    printf("\nPlease, identify yourself:\n");
     scanf(" %[^\n]s", username);
     
-    printf("\nNow insert the user data you want to save\n");
-    printf("Email: \n");
+    printf("\nNow insert the user data you want to save.\n");
+    printf("Email:\n");
     scanf(" %[^\n]s", email);
-    printf("Name: \n");
+    printf("Name:\n");
     scanf(" %[^\n]s", name);
-    printf("Surname: \n");
+    printf("Surname:\n");
     scanf(" %[^\n]s", surname);
-    printf("Residence: \n");
+    printf("Residence:\n");
     scanf(" %[^\n]s", residence);
-    printf("Graduation: \n");
+    printf("Graduation:\n");
     scanf(" %[^\n]s", graduation);
-    printf("Graduation year: \n");
-    scanf("%d", graduation_year);
-    printf("Skills: \n");
+    printf("Graduation year:\n");
+    scanf(" %[^\n]s", graduation_year);
+    printf("Skills:\n");
     scanf(" %[^\n]s", skills);
-    // fazer um array de strings
-    /*
+    
     printf("Previous experiences: \n");
-    experiences = malloc(sizeof (char) * 500);
-    while (add_xp == "y") {
-        xp_size++;
-        experiences = realloc((xp_size) * sizeof (char) * 500);
+    experiences = malloc(sizeof(char*));
+    while (add_xp == 'y') {
+        experiences[xp_size] = malloc(sizeof(char) * 200);
         scanf(" %[^\n]s", experiences[xp_size]);
+        xp_size++;
         printf("Add another experience? (y/n)\n");
-        scanf("%c", add_xp);
+        scanf(" %c", &add_xp);
+        if (add_xp == 'y') {
+            experiences = realloc(experiences, (xp_size + 1) * sizeof(char*));
+        }
     }
-    */
 
-    // document = bson_new();
-    // BSON_APPEND_UTF8(&document, "name", name);
+    // create bson
+    document = bson_new();
+    bson_append_utf8(document, "email", strlen("email\0"), email, -1);
+    bson_append_utf8(document, "name", strlen("name\0"), name, -1);
+    bson_append_utf8(document, "surname", strlen("surname\0"), surname, -1);
+    bson_append_utf8(document, "residence", strlen("residence\0"), residence, -1);
+    bson_append_utf8(document, "graduation", strlen("graduation\0"), graduation, -1);
+    bson_append_utf8(document, "graduationYear", strlen("graduationYear\0"), graduation_year, -1);
+    bson_append_utf8(document, "skills", strlen("skills\0"), skills, -1);
 
-    // converter dados
-    // user = bson_as_canonical_extended_json(document, NULL);
+    BSON_APPEND_ARRAY_BEGIN(document, "experiences", &child);
+    for (int i = 0; i < xp_size; ++i) {
+        keylen = bson_uint32_to_string(i, &key, buf, sizeof buf);
+        bson_append_utf8(&child, key, (int) keylen, experiences[i], -1);
+    }
+    bson_append_array_end(document, &child);
 
-    // enviar mensagem
+    // convert data
+    profile = bson_as_canonical_extended_json(document, NULL);
+    
+    memset(msg, 0, sizeof msg);
 
-    // receber feedback
+    p = msg;
+    memcpy(p, &op, sizeof(int));
+    shift = sizeof(int);
+    p = msg + shift;
+    memcpy(p, username, sizeof(username));
+    shift += sizeof(username);
+    p = msg + shift;
+    strcpy(p, profile);
+    
+    // send message
+    send_message(curr_fd, msg, sizeof msg);
 
+    // receive feedback
+    receive_message(curr_fd, feedback);
+    printf(feedback);
+
+    bson_free(profile);
+    bson_destroy(document);
+
+    for (int i = 0; i < xp_size; i++) {
+        free(experiences[i]);
+    }
+    free(experiences);
 }
 
 void add_new_experiences(int curr_fd) {
     printf("TODO: Implementar - %s\n", __func__);
     // pedir dados
+    
 
     // converter
 
@@ -223,11 +266,19 @@ void list_by_graduation_year(int curr_fd) {
 }
 
 void list_all(int curr_fd) {
-    printf("TODO: Implementar - %s\n", __func__);
-    // enviar request
+    
+    int op = LIST_ALL;
+    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
 
-    // esperar resposta ou feedback
+    memcpy(send_buffer, &op, sizeof(int));
+    
+    send_message(curr_fd, send_buffer, sizeof send_buffer);
 
+    receive_message(curr_fd, receive_buffer);
+
+    printf("%s\n", receive_buffer);
+
+    return;
 }
 
 void find_by_email(int curr_fd) {

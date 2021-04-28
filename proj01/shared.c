@@ -8,28 +8,34 @@
 
 #include "shared.h"
 
-int send_message(int fd, char *msg) {
+void send_message(int fd, char *msg, int msg_len) {
 
-    int len_sent, total_sent = 0;
+    int len_sent, total_sent = 0, str_len;
     char buffer[BUFFER_LEN];
+
+    if (msg_len == -1) {
+        str_len = strlen(msg);
+    } else {
+        str_len = msg_len;
+    }
     
-    memcpy(buffer, msg, strlen(msg));
+    memset(buffer, 0, sizeof buffer);
+    memcpy(buffer, msg, str_len);
+
     while (total_sent < BUFFER_LEN) {
         if ((len_sent = send(fd, &buffer[total_sent], (BUFFER_LEN - total_sent), 0)) > 0) {
             total_sent += len_sent;
         } else if (len_sent == 0) {
             printf("The other side shut down connection.\n");
-            return 0;
+            exit(0);
         } else {
             printf("Error sending message!\n");
             exit(1);
         }
     }
-
-    return len_sent; 
 }
 
-int receive_message(int fd, char *msg) {
+void receive_message(int fd, char *msg) {
     
     int len_read, buffer_filled = 0;
     
@@ -38,11 +44,10 @@ int receive_message(int fd, char *msg) {
             buffer_filled += len_read;
         } else if (len_read == 0) {
             printf("The other side shut down connection.\n");
+            exit(0);
         } else {
             printf("Error reading message!\n");
             exit(1);
         }
     }
-
-    return len_read;
 }

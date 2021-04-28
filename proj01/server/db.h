@@ -10,24 +10,25 @@
 
 /* constants */ 
 #define MONGO_LOCAL_URI "mongodb://localhost:27017"
-#define USER_COLLECTION 'alumni'
+#define DB_NAME "alumni"
+#define PROFILE_COLLECTION "profiles"
 
 /* types */
 
 /* functions */
-mongoc_client_t* connect_db();
+mongoc_client_t* connect_db(char*);
 mongoc_client_t* disconnect_db(mongoc_client_t*);
 
-// >> db.database.find({A: /abc def/i });
-// >> db.users.findOne({"username" : {$regex : ".*son.*"}});
+// >> db.database.find({ "A": "/abc def/i" });
+// >> db.alumni.findOne({"username" : {$regex : " "}});
 
-int db_register_profile(char *, mongoc_client_t*); 
-char* db_add_new_experiences(char*, char *, mongoc_client_t*); //bson_t?
-char* db_list_by_course(char *, mongoc_client_t*);
-char* db_list_by_skill(char *, mongoc_client_t*);
-char* db_list_by_graduation_year(int, mongoc_client_t*);
-char* db_list_all(mongoc_client_t*);
-char* db_find_by_email(char *, mongoc_client_t*);
-int db_delete_profile(char *, mongoc_client_t*);
+int db_register_profile(char*, mongoc_client_t*); 
+int db_add_new_experiences(char*, char *, mongoc_client_t*); //bson_t?
+void db_list_by_course(char*, char*, mongoc_client_t*);
+void db_list_by_skill(char*, char*, mongoc_client_t*);
+void db_list_by_graduation_year(int, char*, mongoc_client_t*);
+void db_list_all(char*,mongoc_client_t*);
+void db_find_by_email(char*, char*, mongoc_client_t*);
+int db_delete_profile(char*, mongoc_client_t*);
 
 #endif
