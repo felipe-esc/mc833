@@ -168,7 +168,15 @@ void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
 
 void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
     printf("TODO: Implementar - %s\n", __func__);
-    // ver se é admin, senão for admin já envia um feedback
+       char username[USERNAME_LEN];
+
+    memset(username, 0, sizeof username);
+    memcpy(username, msg, sizeof(username));
+    if (!check_admin(username)) {
+        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
+        printf("User couldn't add a new experience, permission denied!\n");
+        return;
+    }
     
     // separar dados
 
@@ -227,8 +235,16 @@ void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client) {
 }
 
 void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
-    printf("TODO: Implementar - %s\n", __func__);
-    // ver se é admin, senão for admin já envia um feedback
+    char username[USERNAME_LEN];
+
+    memset(username, 0, sizeof username);
+    memcpy(username, msg, sizeof(username));
+
+    if (!check_admin(username)) {
+        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
+        printf("User couldn't delete a profile, permission denied!\n");
+        return;
+    }
     
     // separar dados
 

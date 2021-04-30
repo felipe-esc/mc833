@@ -170,6 +170,7 @@ void register_profile(int curr_fd) {
         scanf(" %[^\n]s", experiences[xp_size]);
         xp_size++;
         printf("Add another experience? (y/n)\n");
+        printf("Please, insert your additional experiece\n");
         scanf(" %c", &add_xp);
         if (add_xp == 'y') {
             experiences = realloc(experiences, (xp_size + 1) * sizeof(char*));
