@@ -168,7 +168,7 @@ void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
 
 void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
     printf("TODO: Implementar - %s\n", __func__);
-       char username[USERNAME_LEN];
+    char username[USERNAME_LEN];
 
     memset(username, 0, sizeof username);
     memcpy(username, msg, sizeof(username));

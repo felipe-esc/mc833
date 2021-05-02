@@ -170,9 +170,9 @@ void register_profile(int curr_fd) {
         scanf(" %[^\n]s", experiences[xp_size]);
         xp_size++;
         printf("Add another experience? (y/n)\n");
-        printf("Please, insert your additional experiece\n");
         scanf(" %c", &add_xp);
         if (add_xp == 'y') {
+            printf("Please, insert your additional experiece\n");
             experiences = realloc(experiences, (xp_size + 1) * sizeof(char*));
         }
     }
@@ -214,6 +214,7 @@ void register_profile(int curr_fd) {
     // receive feedback
     receive_message(curr_fd, feedback);
     printf(feedback);
+    
 
     bson_free(profile);
     bson_destroy(document);
@@ -237,32 +238,48 @@ void add_new_experiences(int curr_fd) {
 }
 
 void list_by_course(int curr_fd) {
-    printf("TODO: Implementar - %s\n", __func__);
-    // pedir curso
+    printf("Insert the graduation course that you want consult");
+    char graduation[50], feedback[BUFFER_LEN];
+    // Entender a forma de descobrir o tamnho de feedback, alocação dinâmica.\
+    scanf("%[^\n]s", graduation);
 
-    // enviar
+    // enviar        
+    send_message(curr_fd, *graduation, sizeof graduation);
 
-    // esperar resposta ou feedback
+    // receive feedback
+    receive_message(curr_fd, feedback);
+    printf(feedback);
 
 }
 
 void list_by_skill(int curr_fd) {
-    printf("TODO: Implementar - %s\n", __func__);
-    // pedir habilidade
+    char skill[200];
+    // char feedback[BUFFER_LEN];
+    printf("Insert the skill that you want to consult");
 
+    scanf("%[^\n]c", &skill);
     // enviar
+    send_message(curr_fd, skill, sizeof skill);
 
-    // esperar resposta ou feedback
+    // receive feedback
+    receive_message(curr_fd, feedback);
+    // printf(feedback);
 
 }
 
 void list_by_graduation_year(int curr_fd) {
-    printf("TODO: Implementar - %s\n", __func__);
-    // pedir ano
-
+    int year;
+    
+    printf("Insert the graduation year that you want to consult");
+    // Debuggar direitinho o que vem em feedback
+    char feedback[300];
+    scanf("%[^\n]d", &year);
     // enviar
+    send_message(curr_fd, year, sizeof year);
 
-    // esperar resposta ou feedback
+    // receive feedback
+    receive_message(curr_fd, feedback);
+    printf(feedback);
 
 }
 
@@ -283,21 +300,30 @@ void list_all(int curr_fd) {
 }
 
 void find_by_email(int curr_fd) {
-    printf("TODO: Implementar - %s\n", __func__);
-    // pedir email
+   char email[200];
+    // char feedback[BUFFER_LEN];
+    printf("Insert the email that you want to consult");
 
+    scanf("%[^\n]c", &email);
     // enviar
+    send_message(curr_fd, email, sizeof email);
 
-    // esperar resposta ou feedback
+    // receive feedback
+    receive_message(curr_fd, feedback);
+    // printf(feedback);
 
 }
 
 void delete_profile(int curr_fd) {
-    printf("TODO: Implementar - %s\n", __func__);
-    // pedir email
+    char email[200];
+    // char feedback[BUFFER_LEN];
+    printf("Insert the email that you want to delete");
 
+    scanf("%[^\n]c", &email);
     // enviar
+    send_message(curr_fd, email, sizeof email);
 
-    // esperar resposta ou feedback
-
+    // receive feedback
+    receive_message(curr_fd, feedback);
+    // printf(feedback);
 }
