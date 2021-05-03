@@ -100,8 +100,9 @@ void operate(int curr_fd) {
 }
 
 void close_connection(int curr_fd) {
-    
+    // Fala qual é a operaao
     int op = CLOSE_CONNECTION;
+
     char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
 
     memcpy(send_buffer, &op, sizeof(int));
@@ -207,8 +208,9 @@ void register_profile(int curr_fd) {
     shift += sizeof(username);
     p = msg + shift;
     strcpy(p, profile);
-    
-    // send message
+    printf(msg);
+    printf("210");
+        // send message
     send_message(curr_fd, msg, sizeof msg);
 
     // receive feedback
@@ -226,9 +228,16 @@ void register_profile(int curr_fd) {
 }
 
 void add_new_experiences(int curr_fd) {
-    printf("TODO: Implementar - %s\n", __func__);
+    int op = ADD_EXPERIENCES;
+    char experience[50], feedback[BUFFER_LEN], username[USERNAME_LEN];
+    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
+    memcpy(send_buffer, &op, sizeof(int));
+  
+    // op tem a operation, mas falta pegar os dados recebido do scanf
     // pedir dados
-    
+    printf("Insert the username that you want to add a new experience");
+
+    printf("Now, insert the experience that you want to be added");
 
     // converter
 
@@ -238,11 +247,14 @@ void add_new_experiences(int curr_fd) {
 }
 
 void list_by_course(int curr_fd) {
-    printf("Insert the graduation course that you want consult");
+    int op = LIST_BY_COURSE;
     char graduation[50], feedback[BUFFER_LEN];
-    // Entender a forma de descobrir o tamnho de feedback, alocação dinâmica.\
-    scanf("%[^\n]s", graduation);
+    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
+    printf("Insert the graduation course that you want consult");
 
+    scanf("%[^\n]s", graduation);
+    memcpy(send_buffer, &op, sizeof(int));
+    // op tem a operation, mas falta pegar o dado recebido do scanf
     // enviar        
     send_message(curr_fd, *graduation, sizeof graduation);
 
@@ -253,6 +265,19 @@ void list_by_course(int curr_fd) {
 }
 
 void list_by_skill(int curr_fd) {
+    int op = LIST_BY_SKILL;
+    char skill[50], feedback[BUFFER_LEN];
+    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
+    
+
+
+    memcpy(send_buffer, &op, sizeof(int));
+    // op tem a operation, mas falta pegar os dados recebido do scanf
+    // pedir dados
+    printf("Insert the username that you want to add a new experience");
+
+    printf("Now, insert the experience that you want to be added");
+
     char skill[200];
     // char feedback[BUFFER_LEN];
     printf("Insert the skill that you want to consult");
@@ -262,23 +287,29 @@ void list_by_skill(int curr_fd) {
     send_message(curr_fd, skill, sizeof skill);
 
     // receive feedback
-    receive_message(curr_fd, feedback);
+    // receive_message(curr_fd, feedback);
     // printf(feedback);
 
 }
 
 void list_by_graduation_year(int curr_fd) {
+    int op = LIST_BY_GRADUATION_YEAR;
     int year;
+    char feedback[BUFFER_LEN];
+    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
+    memcpy(send_buffer, &op, sizeof(int));
+  
+    // op tem a operation, mas falta pegar os dados recebido do scanf
+    // pedir dados
     
     printf("Insert the graduation year that you want to consult");
-    // Debuggar direitinho o que vem em feedback
-    char feedback[300];
+
     scanf("%[^\n]d", &year);
     // enviar
     send_message(curr_fd, year, sizeof year);
 
     // receive feedback
-    receive_message(curr_fd, feedback);
+    receive_message(curr_fd, receive_buffer);
     printf(feedback);
 
 }
@@ -300,30 +331,37 @@ void list_all(int curr_fd) {
 }
 
 void find_by_email(int curr_fd) {
-   char email[200];
+    int op = FIND_BY_EMAIL;
+    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
+    char email[200];
+    memcpy(send_buffer, &op, sizeof(int));
     // char feedback[BUFFER_LEN];
     printf("Insert the email that you want to consult");
-
     scanf("%[^\n]c", &email);
     // enviar
     send_message(curr_fd, email, sizeof email);
 
     // receive feedback
-    receive_message(curr_fd, feedback);
+    // receive_message(curr_fd, feedback);
     // printf(feedback);
 
 }
 
 void delete_profile(int curr_fd) {
-    char email[200];
+    int op = DELETE_PROFILE;
+    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
+    char username[USERNAME_LEN];
+
+    memcpy(send_buffer, &op, sizeof(int));
+
     // char feedback[BUFFER_LEN];
     printf("Insert the email that you want to delete");
 
-    scanf("%[^\n]c", &email);
+    // scanf("%[^\n]c", &email);
     // enviar
-    send_message(curr_fd, email, sizeof email);
+    // send_message(curr_fd, email, sizeof email);
 
     // receive feedback
-    receive_message(curr_fd, feedback);
+    // receive_message(curr_fd, feedback);
     // printf(feedback);
 }
