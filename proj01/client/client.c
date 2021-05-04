@@ -278,7 +278,7 @@ void list_by_skill(int curr_fd) {
 
     printf("Now, insert the experience that you want to be added");
 
-    char skill[200];
+    // char skill[200];
     // char feedback[BUFFER_LEN];
     printf("Insert the skill that you want to consult");
 
