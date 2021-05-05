@@ -15,6 +15,15 @@
 #include "../shared.h"
 
 /* constants */
+#define EMAIL_LEN 100
+#define COURSE_LEN 50
+#define NAME_LEN 30
+#define SURNAME_LEN 200
+#define RESIDENCE_LEN 50
+#define GRADUATION_LEN 50
+#define SKILL_LEN 200
+#define YEAR_LEN 5
+#define EXPERIENCE_LEN 200
 
 /* types */
 

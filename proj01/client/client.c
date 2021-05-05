@@ -100,17 +100,15 @@ void operate(int curr_fd) {
 }
 
 void close_connection(int curr_fd) {
-    // Fala qual é a operaao
+    
     int op = CLOSE_CONNECTION;
-
     char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
 
     memcpy(send_buffer, &op, sizeof(int));
-    
+
     send_message(curr_fd, send_buffer, sizeof send_buffer);
 
     receive_message(curr_fd, receive_buffer);
-
     printf("%s\n", receive_buffer);
 
     return;
@@ -137,8 +135,9 @@ void print_help() {
 
 void register_profile(int curr_fd) {
 
-    char username[USERNAME_LEN], email[EMAIL_LEN], name[30], surname[200], residence[50], graduation[50], skills[200], graduation_year[5];
-    char **experiences, *profile, add_xp = 'y', buf[200], msg[BUFFER_LEN], feedback[BUFFER_LEN], *p;
+    char username[USERNAME_LEN], email[EMAIL_LEN], name[NAME_LEN], surname[SURNAME_LEN], 
+        residence[RESIDENCE_LEN], graduation[GRADUATION_LEN], skills[SKILL_LEN], graduation_year[YEAR_LEN], 
+        **experiences, *profile, add_xp = 'y', buf[200], msg[BUFFER_LEN], feedback[BUFFER_LEN];
     const char *key;
     int xp_size = 0, op = REGISTER_PROFILE, shift;
     bson_t *document, child;
@@ -167,7 +166,7 @@ void register_profile(int curr_fd) {
     printf("Previous experiences: \n");
     experiences = malloc(sizeof(char*));
     while (add_xp == 'y') {
-        experiences[xp_size] = malloc(sizeof(char) * 200);
+        experiences[xp_size] = malloc(sizeof(char) * EXPERIENCE_LEN);
         scanf(" %[^\n]s", experiences[xp_size]);
         xp_size++;
         printf("Add another experience? (y/n)\n");
@@ -200,23 +199,18 @@ void register_profile(int curr_fd) {
     
     memset(msg, 0, sizeof msg);
 
-    p = msg;
-    memcpy(p, &op, sizeof(int));
+    memcpy(msg, &op, sizeof(int));
     shift = sizeof(int);
-    p = msg + shift;
-    memcpy(p, username, sizeof(username));
+    memcpy(&msg[shift], username, sizeof(username));
     shift += sizeof(username);
-    p = msg + shift;
-    strcpy(p, profile);
-    printf(msg);
-    printf("210");
-        // send message
+    strcpy(&msg[shift], profile);
+
+    // send message
     send_message(curr_fd, msg, sizeof msg);
 
     // receive feedback
     receive_message(curr_fd, feedback);
     printf(feedback);
-    
 
     bson_free(profile);
     bson_destroy(document);
@@ -229,15 +223,15 @@ void register_profile(int curr_fd) {
 
 void add_new_experiences(int curr_fd) {
     int op = ADD_EXPERIENCES;
-    char experience[50], feedback[BUFFER_LEN], username[USERNAME_LEN];
-    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
+    char experience[EXPERIENCE_LEN], feedback[BUFFER_LEN], username[USERNAME_LEN], 
+        send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
     memcpy(send_buffer, &op, sizeof(int));
   
     // op tem a operation, mas falta pegar os dados recebido do scanf
     // pedir dados
-    printf("Insert the username that you want to add a new experience");
+    printf("Insert the username that you want to add a new experience\n");
 
-    printf("Now, insert the experience that you want to be added");
+    printf("Now, insert the experience that you want to be added\n");
 
     // converter
 
@@ -247,71 +241,57 @@ void add_new_experiences(int curr_fd) {
 }
 
 void list_by_course(int curr_fd) {
-    int op = LIST_BY_COURSE;
-    char graduation[50], feedback[BUFFER_LEN];
-    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
-    printf("Insert the graduation course that you want consult");
 
-    scanf("%[^\n]s", graduation);
+    int op = LIST_BY_COURSE, shift;
+    char graduation[GRADUATION_LEN], send_buffer[BUFFER_LEN], feedback[BUFFER_LEN];
+    
     memcpy(send_buffer, &op, sizeof(int));
-    // op tem a operation, mas falta pegar o dado recebido do scanf
-    // enviar        
-    send_message(curr_fd, *graduation, sizeof graduation);
+    shift = sizeof(int);
 
-    // receive feedback
+    printf("Insert the graduation course that you want consult\n");
+    scanf(" %[^\n]s", graduation);
+    memcpy(&send_buffer[shift], graduation, sizeof(graduation));      
+    
+    send_message(curr_fd, send_buffer, sizeof(send_buffer));
+
     receive_message(curr_fd, feedback);
     printf(feedback);
-
 }
 
 void list_by_skill(int curr_fd) {
-    int op = LIST_BY_SKILL;
-    char skill[50], feedback[BUFFER_LEN];
-    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
-    
 
+    int op = LIST_BY_SKILL, shift;
+    char skill[SKILL_LEN], send_buffer[BUFFER_LEN], feedback[BUFFER_LEN];
 
     memcpy(send_buffer, &op, sizeof(int));
-    // op tem a operation, mas falta pegar os dados recebido do scanf
-    // pedir dados
-    printf("Insert the username that you want to add a new experience");
+    shift = sizeof(int);
 
-    printf("Now, insert the experience that you want to be added");
+    printf("Insert the skill that you want to consult\n");
+    scanf(" %[^\n]s", skill);
+    memcpy(&send_buffer[shift], skill, sizeof(skill));
+    
+    send_message(curr_fd, send_buffer, sizeof(send_buffer));
 
-    // char skill[200];
-    // char feedback[BUFFER_LEN];
-    printf("Insert the skill that you want to consult");
-
-    scanf("%[^\n]c", &skill);
-    // enviar
-    send_message(curr_fd, skill, sizeof skill);
-
-    // receive feedback
-    // receive_message(curr_fd, feedback);
-    // printf(feedback);
-
+    receive_message(curr_fd, feedback);
+    printf(feedback);
 }
 
 void list_by_graduation_year(int curr_fd) {
-    int op = LIST_BY_GRADUATION_YEAR;
-    int year;
-    char feedback[BUFFER_LEN];
-    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
-    memcpy(send_buffer, &op, sizeof(int));
-  
-    // op tem a operation, mas falta pegar os dados recebido do scanf
-    // pedir dados
     
-    printf("Insert the graduation year that you want to consult");
+    int op = LIST_BY_GRADUATION_YEAR, shift;
+    char year[YEAR_LEN], send_buffer[BUFFER_LEN], feedback[BUFFER_LEN];
+    
+    memcpy(send_buffer, &op, sizeof(int));
+    shift = sizeof(int);
+    
+    printf("Insert the graduation year that you want to consult\n");
+    scanf(" %[^\n]s", year);
+    memcpy(&send_buffer[shift], year, sizeof(year));
+    
+    send_message(curr_fd, send_buffer, sizeof(send_buffer));
 
-    scanf("%[^\n]d", &year);
-    // enviar
-    send_message(curr_fd, year, sizeof year);
-
-    // receive feedback
-    receive_message(curr_fd, receive_buffer);
+    receive_message(curr_fd, feedback);
     printf(feedback);
-
 }
 
 void list_all(int curr_fd) {
@@ -326,36 +306,35 @@ void list_all(int curr_fd) {
     receive_message(curr_fd, receive_buffer);
 
     printf("%s\n", receive_buffer);
-
-    return;
 }
 
 void find_by_email(int curr_fd) {
-    int op = FIND_BY_EMAIL;
-    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
-    char email[200];
+    
+    int op = FIND_BY_EMAIL, shift;
+    char send_buffer[BUFFER_LEN], feedback[BUFFER_LEN];
+    char email[EMAIL_LEN];
+
     memcpy(send_buffer, &op, sizeof(int));
-    // char feedback[BUFFER_LEN];
-    printf("Insert the email that you want to consult");
-    scanf("%[^\n]c", &email);
-    // enviar
-    send_message(curr_fd, email, sizeof email);
+    shift = sizeof(int);
 
-    // receive feedback
-    // receive_message(curr_fd, feedback);
-    // printf(feedback);
+    printf("Insert the email that you want to consult:\n");
+    scanf(" %[^\n]s", &email);
+    memcpy(&send_buffer[shift], email, sizeof(int));
 
+    send_message(curr_fd, send_buffer, sizeof(send_buffer));
+
+    receive_message(curr_fd, feedback);
+    printf(feedback);
 }
 
 void delete_profile(int curr_fd) {
     int op = DELETE_PROFILE;
-    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
-    char username[USERNAME_LEN];
+    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN], username[USERNAME_LEN];
 
     memcpy(send_buffer, &op, sizeof(int));
 
     // char feedback[BUFFER_LEN];
-    printf("Insert the email that you want to delete");
+    printf("Insert the email that you want to delete\n");
 
     // scanf("%[^\n]c", &email);
     // enviar
