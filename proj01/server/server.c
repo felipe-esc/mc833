@@ -12,6 +12,18 @@
 #include "server.h"
 #include "db.h"
 
+
+/* constants */
+#define EMAIL_LEN 100
+#define COURSE_LEN 50
+#define NAME_LEN 30
+#define SURNAME_LEN 200
+#define RESIDENCE_LEN 50
+#define GRADUATION_LEN 50
+#define SKILL_LEN 200
+#define YEAR_LEN 5
+#define EXPERIENCE_LEN 200
+
 int main(int argc, char *argv[]) {
 
     int sock_fd, new_fd;
@@ -136,18 +148,19 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
     }
 }
 
-bool check_admin(char *username) {
-    return strcmp(username, SERVER_ADMIN_USERNAME) == 0;
-}
+
+// int check_admin(char *username){
+//     return strcmp(username, SERVER_ADMIN_USERNAME);
+// }
 
 void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
     
     char username[USERNAME_LEN];
     int shift;
-
+    bool isAdmin;
     memset(username, 0, sizeof username);
-    memcpy(username, msg, sizeof(username));
-    if (!check_admin(username)) {
+    memcpy(username, msg, sizeof(username));    
+    if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
         send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
         printf("User couldn't add profile, permission denied!\n");
         return;
@@ -172,7 +185,7 @@ void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
 
     memset(username, 0, sizeof username);
     memcpy(username, msg, sizeof(username));
-    if (!check_admin(username)) {
+    if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
         send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n", -1);
         printf("User couldn't add a new experience, permission denied!\n");
         return;
@@ -245,7 +258,7 @@ void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
     memset(username, 0, sizeof(username));
     memcpy(username, msg, sizeof(username));
 
-    if (!check_admin(username)) {
+    if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
         send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
         printf("User couldn't delete a profile, permission denied!\n");
         return;

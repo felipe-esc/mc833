@@ -97,8 +97,8 @@ void db_list_by_course(char *course, char* buffer, mongoc_client_t *client) {
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
     query = bson_new();
-
-    BSON_APPEND_UTF8(query, "graduation", course); // talvez seja BSON_APPEND_UTF8(query, "graduation", course, strlen(course));
+    printf("recived course %s\n", course);
+    BSON_APPEND_UTF8(query, "graduation",course); // talvez seja BSON_APPEND_UTF8(query, "graduation", course, strlen(course));
     cursor = mongoc_collection_find_with_opts (collection, query, NULL, NULL);
     while (mongoc_cursor_next (cursor, &doc)) {
         str = bson_as_canonical_extended_json (doc, NULL);
@@ -113,7 +113,7 @@ void db_list_by_course(char *course, char* buffer, mongoc_client_t *client) {
 }
 
 void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
-    
+
     mongoc_collection_t *collection;
     mongoc_cursor_t *cursor;
     bson_error_t error;
@@ -122,17 +122,15 @@ void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
     char *str;
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
-    doc = bson_new_from_json((const uint8_t *)skill, -1, &error);
     query = bson_new();
-    // na vdd tem que fazer { "skills" : { $contains: skill }}
-
-    BSON_APPEND_UTF8(query, "skills", doc);
-    cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
-    while (mongoc_cursor_next(cursor, &doc)) {
-        str = bson_as_canonical_extended_json(doc, NULL);
+    printf("recived skill %s\n", skill);
+    BSON_APPEND_UTF8(query, "skills",skill); // talvez seja BSON_APPEND_UTF8(query, "graduation", course, strlen(course));
+    cursor = mongoc_collection_find_with_opts (collection, query, NULL, NULL);
+    while (mongoc_cursor_next (cursor, &doc)) {
+        str = bson_as_canonical_extended_json (doc, NULL);
         // todo: append to buffer
-        printf("%s\n", str);
-        bson_free(str);
+        printf ("%s\n", str);
+        bson_free (str);
     }
 
     bson_destroy(query);
@@ -151,11 +149,11 @@ void db_list_by_graduation_year(char* year, char* buffer, mongoc_client_t *clien
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
     query = bson_new();
-    BSON_APPEND_UTF8(query, "graduationYear", year);
-
-    cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
-    while (mongoc_cursor_next(cursor, &doc)) {
-        str = bson_as_canonical_extended_json(doc, NULL);
+    printf("recived graduationYear %s\n", year);
+    BSON_APPEND_UTF8(query, "graduationYear",year); // talvez seja BSON_APPEND_UTF8(query, "graduation", course, strlen(course));
+    cursor = mongoc_collection_find_with_opts (collection, query, NULL, NULL);
+    while (mongoc_cursor_next (cursor, &doc)) {
+        str = bson_as_canonical_extended_json (doc, NULL);
         // todo: append to buffer
         printf ("%s\n", str);
         bson_free (str);
@@ -195,7 +193,7 @@ void db_list_all(char* buffer, mongoc_client_t *client) {
 
 void db_find_by_email(char *email, char *buffer, mongoc_client_t *client) {
     
-    mongoc_collection_t *collection;
+   mongoc_collection_t *collection;
     mongoc_cursor_t *cursor;
     bson_error_t error;
     const bson_t *doc;
@@ -204,14 +202,15 @@ void db_find_by_email(char *email, char *buffer, mongoc_client_t *client) {
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
     query = bson_new();
-    BSON_APPEND_UTF8(query, "email", email);
-
-    cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
+    printf("recived email %s\n", email);
+    // email chegando julio,  com envio =  julio@julio.com , parece problema com o @
+    BSON_APPEND_UTF8(query, "email",email); // talvez seja BSON_APPEND_UTF8(query, "graduation", course, strlen(course));
+    cursor = mongoc_collection_find_with_opts (collection, query, NULL, NULL);
     while (mongoc_cursor_next (cursor, &doc)) {
         str = bson_as_canonical_extended_json (doc, NULL);
-        // todo: add to buffer
-        printf("%s\n", str);
-        bson_free(str);
+        // todo: append to buffer
+        printf ("%s\n", str);
+        bson_free (str);
     }
 
     bson_destroy(query);
