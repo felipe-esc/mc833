@@ -137,7 +137,6 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
 }
 
 bool check_admin(char *username) {
-    // not working right
     return strcmp(username, SERVER_ADMIN_USERNAME) == 0;
 }
 
@@ -163,26 +162,34 @@ void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
         return;
     }
     
-    send_message(curr_fd, "[SERVER] Profile successfully inserted! ;)\n\0", -1);
+    send_message(curr_fd, "[SERVER] Profile successfully inserted! ;)\n", -1);
 }
 
 void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
-    printf("TODO: Implementar - %s\n", __func__);
-    char username[USERNAME_LEN];
+
+    int shift;
+    char username[USERNAME_LEN], email[EMAIL_LEN];
 
     memset(username, 0, sizeof username);
     memcpy(username, msg, sizeof(username));
     if (!check_admin(username)) {
-        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
+        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n", -1);
         printf("User couldn't add a new experience, permission denied!\n");
         return;
     }
+    shift = sizeof(username);
     
-    // separar dados
+    memset(email, 0, sizeof(email));
+    memcpy(email, &msg[shift], sizeof(email));
+    shift += sizeof(email);
 
-    // salvar
+    if (!db_add_new_experiences(email, &msg[shift], db_client)){
+        printf("Could not save new experiences, an unexpected error ocurred!\n");
+        send_message(curr_fd, "[SERVER] Error inserting new experiences! sorry :(\n", -1);
+        return;
+    }
 
-    // feedback ao client
+    send_message(curr_fd, "[SERVER] Profile successfully edited!\n", -1);
 }
 
 void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client) {
@@ -232,9 +239,10 @@ void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client) {
 
 void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
     
+    int shift;
     char username[USERNAME_LEN];
 
-    memset(username, 0, sizeof username);
+    memset(username, 0, sizeof(username));
     memcpy(username, msg, sizeof(username));
 
     if (!check_admin(username)) {
@@ -242,6 +250,7 @@ void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
         printf("User couldn't delete a profile, permission denied!\n");
         return;
     }
+    shift = sizeof(username);
     
     // separar dados
 

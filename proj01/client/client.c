@@ -130,7 +130,7 @@ void print_help() {
                         "\t\t8 - Close connection\n"
                         "\t\t9 - Help\n\n";
     
-    printf("%s\n", help);
+    printf("%s", help);
 }
 
 void register_profile(int curr_fd) {
