@@ -94,6 +94,7 @@ void db_list_by_course(char *course, char* buffer, mongoc_client_t *client) {
     const bson_t *doc;
     bson_t *query;
     char *str;
+    int buffer_filled = 0;
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
     query = bson_new();
@@ -102,8 +103,8 @@ void db_list_by_course(char *course, char* buffer, mongoc_client_t *client) {
     cursor = mongoc_collection_find_with_opts (collection, query, NULL, NULL);
     while (mongoc_cursor_next (cursor, &doc)) {
         str = bson_as_canonical_extended_json (doc, NULL);
-        // todo: append to buffer
-        printf ("%s\n", str);
+        memcpy(buffer + buffer_filled, str, strlen(str));
+        buffer_filled += strlen(str);
         bson_free (str);
     }
 
@@ -120,6 +121,8 @@ void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
     const bson_t *doc;
     bson_t *query;
     char *str;
+    int buffer_filled = 0;
+
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
     query = bson_new();
@@ -128,8 +131,8 @@ void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
     cursor = mongoc_collection_find_with_opts (collection, query, NULL, NULL);
     while (mongoc_cursor_next (cursor, &doc)) {
         str = bson_as_canonical_extended_json (doc, NULL);
-        // todo: append to buffer
-        printf ("%s\n", str);
+        memcpy(buffer + buffer_filled, str, strlen(str));
+        buffer_filled += strlen(str);
         bson_free (str);
     }
 
@@ -146,6 +149,8 @@ void db_list_by_graduation_year(char* year, char* buffer, mongoc_client_t *clien
     const bson_t *doc;
     bson_t *query;
     char *str;
+    int buffer_filled = 0;
+
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
     query = bson_new();
@@ -154,8 +159,8 @@ void db_list_by_graduation_year(char* year, char* buffer, mongoc_client_t *clien
     cursor = mongoc_collection_find_with_opts (collection, query, NULL, NULL);
     while (mongoc_cursor_next (cursor, &doc)) {
         str = bson_as_canonical_extended_json (doc, NULL);
-        // todo: append to buffer
-        printf ("%s\n", str);
+        memcpy(buffer + buffer_filled, str, strlen(str));
+        buffer_filled += strlen(str);
         bson_free (str);
     }
 
@@ -193,23 +198,23 @@ void db_list_all(char* buffer, mongoc_client_t *client) {
 
 void db_find_by_email(char *email, char *buffer, mongoc_client_t *client) {
     
-   mongoc_collection_t *collection;
+    mongoc_collection_t *collection;
     mongoc_cursor_t *cursor;
     bson_error_t error;
     const bson_t *doc;
     bson_t *query;
     char *str;
+    int buffer_filled = 0;
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
     query = bson_new();
     printf("recived email %s\n", email);
-    // email chegando julio,  com envio =  julio@julio.com , parece problema com o @
-    BSON_APPEND_UTF8(query, "email",email); // talvez seja BSON_APPEND_UTF8(query, "graduation", course, strlen(course));
+    BSON_APPEND_UTF8(query, "email",email);
     cursor = mongoc_collection_find_with_opts (collection, query, NULL, NULL);
     while (mongoc_cursor_next (cursor, &doc)) {
         str = bson_as_canonical_extended_json (doc, NULL);
-        // todo: append to buffer
-        printf ("%s\n", str);
+        memcpy(buffer + buffer_filled, str, strlen(str));
+        buffer_filled += strlen(str);
         bson_free (str);
     }
 
@@ -230,6 +235,7 @@ int db_delete_profile(char *email, mongoc_client_t *client) {
     doc = bson_new();
     bson_oid_init(&oid, NULL);
     BSON_APPEND_OID(doc, "_id", &oid);
+    printf("email to be deleted %s", email);
     BSON_APPEND_UTF8(doc, "email", email);
 
     if (!mongoc_collection_delete_one(collection, doc, NULL, NULL, &error)) {

@@ -210,7 +210,8 @@ void register_profile(int curr_fd) {
 
     // receive feedback
     receive_message(curr_fd, feedback);
-    printf(feedback);
+    printf("%s\n",feedback);
+
 
     bson_free(profile);
     bson_destroy(document);
@@ -255,7 +256,9 @@ void list_by_course(int curr_fd) {
     send_message(curr_fd, send_buffer, sizeof(send_buffer));
 
     receive_message(curr_fd, feedback);
-    printf(feedback);
+    printf("Here is the list of users with the chosen course\n");
+    printf("%s\n",feedback);
+
 }
 
 void list_by_skill(int curr_fd) {
@@ -273,7 +276,10 @@ void list_by_skill(int curr_fd) {
     send_message(curr_fd, send_buffer, sizeof(send_buffer));
 
     receive_message(curr_fd, feedback);
-    printf(feedback);
+    printf("Here is the list of users with the chosen skill\n");
+    printf("%s\n",feedback);
+
+
 }
 
 void list_by_graduation_year(int curr_fd) {
@@ -291,7 +297,9 @@ void list_by_graduation_year(int curr_fd) {
     send_message(curr_fd, send_buffer, sizeof(send_buffer));
 
     receive_message(curr_fd, feedback);
-    printf(feedback);
+    printf("Here is the list of users with the chosen graduation year\n");
+    printf("%s\n",feedback);
+
 }
 
 void list_all(int curr_fd) {
@@ -304,7 +312,7 @@ void list_all(int curr_fd) {
     send_message(curr_fd, send_buffer, sizeof send_buffer);
 
     receive_message(curr_fd, receive_buffer);
-
+    printf("Here is the list of all users\n");
     printf("%s\n", receive_buffer);
 }
 
@@ -319,28 +327,35 @@ void find_by_email(int curr_fd) {
 
     printf("Insert the email that you want to consult:\n");
     scanf(" %[^\n]s", &email);
-    memcpy(&send_buffer[shift], email, sizeof(int));
-
+    printf("EMAIL:%s\n", email);
+    memcpy(&send_buffer[shift], email, sizeof(send_buffer));
+    printf("sendbuffer:%s\n", send_buffer);
     send_message(curr_fd, send_buffer, sizeof(send_buffer));
 
     receive_message(curr_fd, feedback);
-    printf(feedback);
+    printf("Here is the list of users with the chosen email\n");
+    
+    printf("%s\n",feedback);
 }
 
 void delete_profile(int curr_fd) {
-    int op = DELETE_PROFILE;
-    char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN], username[USERNAME_LEN];
+    int op = DELETE_PROFILE, shift;
+    char send_buffer[BUFFER_LEN], feedback[BUFFER_LEN], email[EMAIL_LEN];
 
     memcpy(send_buffer, &op, sizeof(int));
+    shift = sizeof(int);
 
     // char feedback[BUFFER_LEN];
     printf("Insert the email that you want to delete\n");
 
-    // scanf("%[^\n]c", &email);
+    scanf("%[^\n]s", &email);
+    memcpy(&send_buffer[shift], email, sizeof(email));
+
     // enviar
-    // send_message(curr_fd, email, sizeof email);
+    send_message(curr_fd, send_buffer, sizeof(send_buffer));
+
 
     // receive feedback
-    // receive_message(curr_fd, feedback);
-    // printf(feedback);
+    receive_message(curr_fd, feedback);
+    printf(feedback);
 }

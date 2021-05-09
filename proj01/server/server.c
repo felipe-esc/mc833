@@ -157,7 +157,6 @@ void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
     
     char username[USERNAME_LEN];
     int shift;
-    bool isAdmin;
     memset(username, 0, sizeof username);
     memcpy(username, msg, sizeof(username));    
     if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
@@ -244,6 +243,7 @@ void list_all(int curr_fd, mongoc_client_t *db_client) {
 void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client) {
     
     char buffer[BUFFER_LEN];
+    printf("emailmsg:%s\n", msg);
 
     db_find_by_email(msg, buffer, db_client);
 
@@ -258,13 +258,21 @@ void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
     memset(username, 0, sizeof(username));
     memcpy(username, msg, sizeof(username));
 
-    if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
-        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
-        printf("User couldn't delete a profile, permission denied!\n");
+    // if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
+    //     send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
+    //     printf("User couldn't delete a profile, permission denied!\n");
+    //     return;
+    // }
+    printf("Removing a profile\n");
+    shift = sizeof(char) * EMAIL_LEN;
+    
+    if (db_delete_profile(&msg[shift], db_client) < 0) {
+        send_message(curr_fd, "[SERVER] An unexpected error ocurred! Could not save profile :/\n\0", -1);
+        printf("Failed saving new profile.\n");
         return;
     }
-    shift = sizeof(username);
     
+    send_message(curr_fd, "[SERVER] Profile successfully inserted! ;)\n", -1);
     // separar dados
 
     // salvar
