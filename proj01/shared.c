@@ -1,7 +1,7 @@
 /*
  * Shared Functions TCP
  *
- * Responsáveis: 
+ * Responsibles: 
  *      Felipe Escórcio de Sousa - RA: 171043
  *      Ricardo Ribeiro Cordeiro - RA: 186633 
  * 
