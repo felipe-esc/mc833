@@ -24,11 +24,6 @@
 mongoc_client_t* connect_db(char*);
 mongoc_client_t* disconnect_db(mongoc_client_t*);
 
-// ** annotations **
-// >> db.database.find({ "A": "/abc def/i" });
-// >> db.alumni.findOne({"username" : {$regex : " "}});
-// >> { $push: { <field>: { $each: [ <value1>, <value2> ... ] } } }
-
 int db_register_profile(char*, mongoc_client_t*); 
 int db_add_new_experiences(char*, char *, mongoc_client_t*); //bson_t?
 void db_list_by_course(char*, char*, mongoc_client_t*);

@@ -60,6 +60,7 @@ int db_register_profile(char *msg, mongoc_client_t *client) {
     bson_error_t error;
     bson_oid_t oid;
     bson_t *doc = NULL;
+    int success = 0;
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
     doc = bson_new_from_json((const uint8_t *)msg, -1, &error);
@@ -74,22 +75,41 @@ int db_register_profile(char *msg, mongoc_client_t *client) {
     
     if (!mongoc_collection_insert_one(collection, doc, NULL, NULL, &error)) {
         printf("DB: Error inserting profile: %s\n", error.message);
-        return -1;
+        success = -1;
     }
 
     bson_destroy(doc);
     mongoc_collection_destroy(collection);
-    return 0;
+    
+    return success;
 }
 
 int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
-    printf("TODO: Implementar - %s\n", __func__);
 
-    // tentar inserir skill
+    mongoc_collection_t *collection;
+    bson_error_t error;
+    bson_oid_t oid;
+    bson_t *doc = NULL;
+    bson_t *update = NULL;
+    bson_t *query = NULL;
+    int success = 0;
 
-    // retornar se sucesso ou não
+    collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
 
-    return 0;
+    query = bson_new();
+    BSON_APPEND_UTF8(query, "email", email);
+    update = BCON_NEW("$push", "{", "experiences", "{", "$each", xp, "}", "}");
+
+    if (!mongoc_collection_update_one(collection, query, update, NULL, NULL, &error)) {
+        printf("DB: Error editing profile: %s\n", error.message);
+        success = -1;
+    }
+
+    bson_destroy(query);
+    bson_destroy(update);
+    mongoc_collection_destroy(collection);
+
+    return success;
 }
 
 void db_list_by_course(char *course, char* buffer, mongoc_client_t *client) {
@@ -105,7 +125,7 @@ void db_list_by_course(char *course, char* buffer, mongoc_client_t *client) {
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
 
     query = bson_new();
-    BSON_APPEND_UTF8(query, "graduation",course);
+    BSON_APPEND_UTF8(query, "graduation", course);
     cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
 
     while (mongoc_cursor_next(cursor, &doc)) {
@@ -129,13 +149,16 @@ void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
     bson_error_t error;
     const bson_t *doc;
     bson_t *query;
-    char *str;
+    char *str, aux[200] = "/";
     int buffer_filled = 0;
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
+    
+    strcat(aux, skill);
+    strcat(aux, "/i");
 
     query = bson_new();
-    BSON_APPEND_UTF8(query, "skills",skill);
+    BSON_APPEND_UTF8(query, "skills", aux);
     cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
 
     while (mongoc_cursor_next(cursor, &doc)) {
@@ -224,7 +247,7 @@ void db_find_by_email(char *email, char *buffer, mongoc_client_t *client) {
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
 
     query = bson_new();
-    BSON_APPEND_UTF8(query, "email",email);
+    BSON_APPEND_UTF8(query, "email", email);
     cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
 
     while (mongoc_cursor_next(cursor, &doc)) {
@@ -247,6 +270,7 @@ int db_delete_profile(char *email, mongoc_client_t *client) {
     bson_error_t error;
     bson_oid_t oid;
     bson_t *doc;
+    int success = 0;
 
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
 
@@ -257,10 +281,11 @@ int db_delete_profile(char *email, mongoc_client_t *client) {
 
     if (!mongoc_collection_delete_one(collection, doc, NULL, NULL, &error)) {
         printf("Delete failed: %s\n", error.message);
+        success = -1;
     }
 
     bson_destroy(doc);
     mongoc_collection_destroy(collection);
 
-    return 0;
+    return success;
 }
