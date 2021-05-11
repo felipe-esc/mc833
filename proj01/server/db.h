@@ -1,5 +1,10 @@
 /*
- * Blabla
+ * DataBase Server TCP - Headers
+ *
+ * Responsáveis: 
+ *      Felipe Escórcio de Sousa - RA: 171043
+ *      Ricardo Ribeiro Cordeiro - RA: 186633 
+ * 
  */
 
 #ifndef DB_H
@@ -19,8 +24,10 @@
 mongoc_client_t* connect_db(char*);
 mongoc_client_t* disconnect_db(mongoc_client_t*);
 
+// ** annotations **
 // >> db.database.find({ "A": "/abc def/i" });
 // >> db.alumni.findOne({"username" : {$regex : " "}});
+// >> { $push: { <field>: { $each: [ <value1>, <value2> ... ] } } }
 
 int db_register_profile(char*, mongoc_client_t*); 
 int db_add_new_experiences(char*, char *, mongoc_client_t*); //bson_t?

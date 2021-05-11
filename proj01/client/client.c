@@ -354,7 +354,6 @@ void delete_profile(int curr_fd) {
     // enviar
     send_message(curr_fd, send_buffer, sizeof(send_buffer));
 
-
     // receive feedback
     receive_message(curr_fd, feedback);
     printf(feedback);

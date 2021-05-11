@@ -1,5 +1,10 @@
 /*
- * blabla
+ * Client TCP - Headers
+ *
+ * Responsáveis: 
+ *      Felipe Escórcio de Sousa - RA: 171043
+ *      Ricardo Ribeiro Cordeiro - RA: 186633 
+ * 
  */
 
 #ifndef CLIENT_H
@@ -15,7 +20,6 @@
 #include "../shared.h"
 
 /* constants */
-#define EMAIL_LEN 100
 #define COURSE_LEN 50
 #define NAME_LEN 30
 #define SURNAME_LEN 200

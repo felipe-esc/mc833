@@ -1,28 +1,20 @@
 /*
- * BlaBla
+ * Server TCP
+ *
+ * Responsáveis: 
+ *      Felipe Escórcio de Sousa - RA: 171043
+ *      Ricardo Ribeiro Cordeiro - RA: 186633 
+ * 
  * Refs:
  *  -   http://beej.us/guide/bgnet/translations/bgnet_ptbr.pdf
  */
 
-// #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "server.h"
 #include "db.h"
-
-
-/* constants */
-#define EMAIL_LEN 100
-#define COURSE_LEN 50
-#define NAME_LEN 30
-#define SURNAME_LEN 200
-#define RESIDENCE_LEN 50
-#define GRADUATION_LEN 50
-#define SKILL_LEN 200
-#define YEAR_LEN 5
-#define EXPERIENCE_LEN 200
 
 int main(int argc, char *argv[]) {
 
@@ -148,15 +140,11 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
     }
 }
 
-
-// int check_admin(char *username){
-//     return strcmp(username, SERVER_ADMIN_USERNAME);
-// }
-
 void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
     
     char username[USERNAME_LEN];
     int shift;
+
     memset(username, 0, sizeof username);
     memcpy(username, msg, sizeof(username));    
     if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
@@ -164,7 +152,7 @@ void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
         printf("User couldn't add profile, permission denied!\n");
         return;
     }
-    printf("Adding new profile\n");
+    printf("Adding new profile.\n");
 
     shift = sizeof(char) * USERNAME_LEN;
 
@@ -175,6 +163,8 @@ void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
     }
     
     send_message(curr_fd, "[SERVER] Profile successfully inserted! ;)\n", -1);
+
+    return;
 }
 
 void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
@@ -190,7 +180,8 @@ void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
         return;
     }
     shift = sizeof(username);
-    
+    printf("Editing a profile: %s\n", &msg[shift]);
+
     memset(email, 0, sizeof(email));
     memcpy(email, &msg[shift], sizeof(email));
     shift += sizeof(email);
@@ -202,6 +193,8 @@ void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
     }
 
     send_message(curr_fd, "[SERVER] Profile successfully edited!\n", -1);
+
+    return;
 }
 
 void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client) {
@@ -211,6 +204,8 @@ void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client) {
     db_list_by_course(msg, list, db_client);
 
     send_message(curr_fd, list, sizeof(list));
+
+    return;
 }
 
 void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client) {
@@ -220,6 +215,8 @@ void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client) {
     db_list_by_skill(msg, list, db_client);
 
     send_message(curr_fd, list, sizeof(list));
+
+    return;
 }
 
 void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client) {
@@ -229,6 +226,8 @@ void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client)
     db_list_by_graduation_year(msg, list, db_client);
 
     send_message(curr_fd, list, sizeof(list));
+
+    return;
 }
 
 void list_all(int curr_fd, mongoc_client_t *db_client) {
@@ -238,16 +237,19 @@ void list_all(int curr_fd, mongoc_client_t *db_client) {
     db_list_all(list, db_client);
 
     send_message(curr_fd, list, sizeof(list));
+
+    return;
 }
 
 void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client) {
     
     char buffer[BUFFER_LEN];
-    printf("emailmsg:%s\n", msg);
 
     db_find_by_email(msg, buffer, db_client);
 
     send_message(curr_fd, buffer, sizeof(buffer));
+
+    return;
 }
 
 void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
@@ -258,25 +260,22 @@ void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
     memset(username, 0, sizeof(username));
     memcpy(username, msg, sizeof(username));
 
-    // if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
-    //     send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
-    //     printf("User couldn't delete a profile, permission denied!\n");
-    //     return;
-    // }
-    printf("Removing a profile\n");
-    shift = sizeof(char) * EMAIL_LEN;
-    
+    if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
+        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
+        printf("User couldn't delete a profile, permission denied!\n");
+        return;
+    }
+    shift = sizeof(username);
+    printf("Deleting a profile: %s\n", &msg[shift]);
+
     if (db_delete_profile(&msg[shift], db_client) < 0) {
-        send_message(curr_fd, "[SERVER] An unexpected error ocurred! Could not save profile :/\n\0", -1);
-        printf("Failed saving new profile.\n");
+        send_message(curr_fd, "[SERVER] An unexpected error ocurred! Could not delete profile :/\n\0", -1);
+        printf("Failed deleting profile.\n");
         return;
     }
     
-    send_message(curr_fd, "[SERVER] Profile successfully inserted! ;)\n", -1);
-    // separar dados
+    send_message(curr_fd, "[SERVER] Profile successfully deleted! ;)\n", -1);
 
-    // salvar
-
-    // feedback ao client
+    return;
 }
 

@@ -1,5 +1,10 @@
 /*
- * BlaBla
+ * Server TCP - Headers
+ *
+ * Responsáveis: 
+ *      Felipe Escórcio de Sousa - RA: 171043
+ *      Ricardo Ribeiro Cordeiro - RA: 186633
+ * 
  */
 
 #ifndef SERVER_H

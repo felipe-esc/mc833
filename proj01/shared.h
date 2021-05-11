@@ -1,5 +1,10 @@
 /*
- * Blabla
+ * Shared Functions TCP - Headers
+ *
+ * Responsáveis: 
+ *      Felipe Escórcio de Sousa - RA: 171043
+ *      Ricardo Ribeiro Cordeiro - RA: 186633 
+ * 
  */
 
 #ifndef CLIENT_SERVER_SHARED
@@ -12,6 +17,7 @@
 #define TIMEOUT 15000
 #define BUFFER_LEN 4096
 #define USERNAME_LEN 20
+#define EMAIL_LEN 100
 
 #define SERVER_DEFAULT_PORT 3490
 #define LOCALHOST "127.0.0.1"

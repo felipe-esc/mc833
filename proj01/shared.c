@@ -1,5 +1,10 @@
 /*
- * Blabla
+ * Shared Functions TCP
+ *
+ * Responsáveis: 
+ *      Felipe Escórcio de Sousa - RA: 171043
+ *      Ricardo Ribeiro Cordeiro - RA: 186633 
+ * 
  */
 
 #include <stdio.h>
