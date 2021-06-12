@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
        server_port = atoi(argv[2]);
     }
 
-    // create socket
+    // create socket (ainda faz sentido?)
     if ((sock_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
         printf("Socket creation failed!\n");
         exit(1);
@@ -48,10 +48,10 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    // todo: enviar mensagens
+    // todo: enviar mensagens infinitamente
     operate(sock_fd);
 
-    printf("See ya!\n");
+    printf("\nSee you, Space Cowboy...\n");
 
     return 0;
 }

@@ -21,6 +21,7 @@ mongoc_client_t* connect_db(char *config_uri) {
 
     mongoc_init();
 
+    // configs db uri
     if (config_uri) {
         memcpy(uri_string, config_uri, strlen(config_uri));
     } else {
@@ -103,7 +104,7 @@ int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
     // gets collection
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
 
-    // creates query: db.collection.updateOne({"email": email }, { $push: { "experiences": [ exp1, exp2, ..., expN ] }})
+    // creates query: db.collection.updateOne({ "email": email }, { $push: { "experiences": { $each: [ exp1, exp2, ..., expN ] }}})
     query = bson_new();
     BSON_APPEND_UTF8(query, "email", email);
     update = BCON_NEW("$push", "{", "experiences", "{", "$each", xp, "}", "}");

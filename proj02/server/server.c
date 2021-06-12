@@ -37,8 +37,8 @@ int main(int argc, char *argv[]) {
 
     db_client = connect_db(mongo_uri);
 
-    // create socket
-    if ((sock_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
+    // create socket (ainda faz sentido?)
+    if ((sock_fd = socket(PF_INET, SOCK_DGRAM, 0)) == -1) {
         printf("Socket creation failed!\n");
         exit(1);
     }
