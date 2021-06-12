@@ -37,12 +37,12 @@ int main(int argc, char *argv[]) {
 
     db_client = connect_db(mongo_uri);
 
-    // create socket (ainda faz sentido?)
+    // create socket
     if ((sock_fd = socket(PF_INET, SOCK_DGRAM, 0)) == -1) {
-        printf("Socket creation failed!\n");
+        printf("Socket creation failed! :(\n");
         exit(1);
     }
-    printf("Socket created.\n");
+    printf("Socket created!\n");
 
     // configure
     memset(&server_addr, 0, sizeof server_addr);
@@ -50,13 +50,17 @@ int main(int argc, char *argv[]) {
     server_addr.sin_port = htons(server_port);
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    // todo: abrir server pra mensagens
-
-    while (1) {
-        // ouvir novas mensagens infinitamente
+    // bind socket
+    if ((bind(socket_fd, (sockaddr*) &server_addr, sizeof(server_addr))) != 0) {
+        printf("Couldn't bind socket! :(\n");
+        exit(1);
     }
+    printf("Socket binded!\n");
 
-    // criar um fluxo pra sair do while
+    // listens for datagrams
+    handle_messages(sock_fd, db_client);
+
+    // it never gets here(!) - it would be nice if it could get :(
     disconnect_db(db_client);
     close(sock_fd);
 
@@ -72,6 +76,7 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
     while (1) {
         memset(buffer, 0, sizeof buffer);
 
+        // receives datagram
         receive_message(curr_fd, buffer);
         
         // get operation
@@ -178,6 +183,8 @@ void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client) {
     
     char list[BUFFER_LEN];
 
+    memset(list, 0, sizeof list);
+
     // gets list on db
     db_list_by_course(msg, list, db_client);
 
@@ -190,6 +197,8 @@ void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client) {
 void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client) {
     
     char list[BUFFER_LEN];
+
+    memset(list, 0, sizeof list);
 
     // gets list on db
     db_list_by_skill(msg, list, db_client);
@@ -204,6 +213,8 @@ void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client)
     
     char list[BUFFER_LEN];
 
+    memset(list, 0, sizeof list);
+
     // gets list on db
     db_list_by_graduation_year(msg, list, db_client);
 
@@ -217,6 +228,8 @@ void list_all(int curr_fd, mongoc_client_t *db_client) {
 
     char list[BUFFER_LEN];
 
+    memset(list, 0, sizeof list);
+
     // gets list on db
     db_list_all(list, db_client);
 
@@ -229,6 +242,8 @@ void list_all(int curr_fd, mongoc_client_t *db_client) {
 void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client) {
     
     char buffer[BUFFER_LEN];
+
+    memset(buffer, 0, sizeof buffer);
 
     // gets profile on db
     db_find_by_email(msg, buffer, db_client);
