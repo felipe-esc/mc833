@@ -1,7 +1,7 @@
 /*
  * Client UDP
  *
- * Responsibles: 
+ * Responsibles:
  *      Felipe Escórcio de Sousa - RA: 171043
  *      Ricardo Ribeiro Cordeiro - RA: 186633 
  * 
@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
        server_port = atoi(argv[2]);
     }
 
-    // create socket (ainda faz sentido?)
-    if ((sock_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
+    // create socket
+    if ((sock_fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
         printf("Socket creation failed!\n");
         exit(1);
     }
@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
     memset(&server_addr, 0, sizeof server_addr);
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(server_port);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
     
     // convert IPv4 or IPv6 ip
     if(inet_pton(AF_INET, server_ip, &server_addr.sin_addr) <= 0) {
@@ -48,15 +49,17 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    // todo: enviar mensagens infinitamente
-    operate(sock_fd);
+    // mais alguma config(?)
+
+    // sends messages
+    operate(sock_fd, (struct sockaddr*) &server_addr);
 
     printf("\nSee you, Space Cowboy...\n");
 
     return 0;
 }
 
-void operate(int curr_fd) {
+void operate(int curr_fd, struct sockaddr *server_addr) {
     int option;
 
     while (1) {
@@ -65,28 +68,28 @@ void operate(int curr_fd) {
 
         switch (option) {
             case REGISTER_PROFILE:
-                register_profile(curr_fd);
+                register_profile(curr_fd, server_addr);
                 break;
             case ADD_EXPERIENCES:
-                add_new_experiences(curr_fd);
+                add_new_experiences(curr_fd, server_addr);
                 break;
             case LIST_BY_COURSE:
-                list_by_course(curr_fd);
+                list_by_course(curr_fd, server_addr);
                 break;
             case LIST_BY_SKILL:
-                list_by_skill(curr_fd);
+                list_by_skill(curr_fd, server_addr);
                 break;
             case LIST_BY_GRADUATION_YEAR:
-                list_by_graduation_year(curr_fd);
+                list_by_graduation_year(curr_fd, server_addr);
                 break;
             case LIST_ALL:
-                list_all(curr_fd);
+                list_all(curr_fd, server_addr);
                 break;
             case FIND_BY_EMAIL:
-                find_by_email(curr_fd);
+                find_by_email(curr_fd, server_addr);
                 break;
             case DELETE_PROFILE:
-                delete_profile(curr_fd);
+                delete_profile(curr_fd, server_addr);
                 break;
             case EXIT:
                 return;
@@ -111,13 +114,13 @@ void print_help() {
                         "\t\t6 - Find by Email\n"
                         "\t\t7 - Delete profile\n"
                         "\t\t8 - Exit\n"
-                        "\t\t8 - Help (Again?)\n\n";
+                        "\t\t9 - Help (Again?)\n\n";
     printf("%s", help);
 
     return;
 }
 
-void register_profile(int curr_fd) {
+void register_profile(int curr_fd, struct sockaddr *server_addr) {
 
     char username[USERNAME_LEN], email[EMAIL_LEN], name[NAME_LEN], surname[SURNAME_LEN], 
         residence[RESIDENCE_LEN], graduation[GRADUATION_LEN], skills[SKILL_LEN], graduation_year[YEAR_LEN], 
@@ -190,10 +193,10 @@ void register_profile(int curr_fd) {
     strcpy(&msg[shift], profile);
 
     // send message
-    send_message(curr_fd, msg, sizeof msg);
+    send_message(curr_fd, msg, sizeof msg, server_addr);
 
     // receive feedback
-    receive_message(curr_fd, feedback);
+    receive_message(curr_fd, feedback, server_addr);
     printf("%s\n",feedback);
 
     // frees pointers
@@ -208,7 +211,7 @@ void register_profile(int curr_fd) {
     return;
 }
 
-void add_new_experiences(int curr_fd) {
+void add_new_experiences(int curr_fd, struct sockaddr *server_addr) {
     
     int op = ADD_EXPERIENCES, xp_size = 0, shift, i = 0;
     char **experiences, username[USERNAME_LEN], feedback[BUFFER_LEN], email[USERNAME_LEN], buf[EXPERIENCE_LEN],
@@ -249,17 +252,17 @@ void add_new_experiences(int curr_fd) {
     memset(send_buffer, 0, sizeof(send_buffer));
     memcpy(send_buffer, &op, sizeof(int));
     shift = sizeof(int);
-    memcpy(&msg[shift], username, sizeof(username));
+    memcpy(&send_buffer[shift], username, sizeof(username));
     shift += sizeof(username);
     memcpy(&send_buffer[shift], email, sizeof(email));
     shift += sizeof(email);
     strcpy(&send_buffer[shift], data);
 
     // sends data to server
-    send_message(curr_fd, send_buffer, sizeof(send_buffer));
+    send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets a feedback
-    receive_message(curr_fd, feedback);
+    receive_message(curr_fd, feedback, server_addr);
     printf("%s\n",feedback);
 
     // frees pointers
@@ -272,7 +275,7 @@ void add_new_experiences(int curr_fd) {
     return;
 }
 
-void list_by_course(int curr_fd) {
+void list_by_course(int curr_fd, struct sockaddr *server_addr) {
 
     int op = LIST_BY_COURSE, shift;
     char graduation[GRADUATION_LEN], send_buffer[BUFFER_LEN], feedback[BUFFER_LEN];
@@ -287,17 +290,17 @@ void list_by_course(int curr_fd) {
     memcpy(&send_buffer[shift], graduation, sizeof(graduation));      
     
     // sends data to server
-    send_message(curr_fd, send_buffer, sizeof(send_buffer));
+    send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets feedback or data
-    receive_message(curr_fd, feedback);
+    receive_message(curr_fd, feedback, server_addr);
     printf("Here is the list of users with the chosen course:\n");
     printf("%s\n",feedback);
 
     return;
 }
 
-void list_by_skill(int curr_fd) {
+void list_by_skill(int curr_fd, struct sockaddr *server_addr) {
 
     int op = LIST_BY_SKILL, shift;
     char skill[SKILL_LEN], send_buffer[BUFFER_LEN], feedback[BUFFER_LEN];
@@ -312,17 +315,17 @@ void list_by_skill(int curr_fd) {
     memcpy(&send_buffer[shift], skill, sizeof(skill));
     
     // sends data to server
-    send_message(curr_fd, send_buffer, sizeof(send_buffer));
+    send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets data or feedback
-    receive_message(curr_fd, feedback);
+    receive_message(curr_fd, feedback, server_addr);
     printf("Here is the list of users with the chosen skill:\n");
     printf("%s\n",feedback);
 
     return;
 }
 
-void list_by_graduation_year(int curr_fd) {
+void list_by_graduation_year(int curr_fd, struct sockaddr *server_addr) {
     
     int op = LIST_BY_GRADUATION_YEAR, shift;
     char year[YEAR_LEN], send_buffer[BUFFER_LEN], feedback[BUFFER_LEN];
@@ -337,17 +340,17 @@ void list_by_graduation_year(int curr_fd) {
     memcpy(&send_buffer[shift], year, sizeof(year));
     
     // sends data to server
-    send_message(curr_fd, send_buffer, sizeof(send_buffer));
+    send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets feedback or data
-    receive_message(curr_fd, feedback);
+    receive_message(curr_fd, feedback, server_addr);
     printf("Here is the list of users with the chosen graduation year:\n");
     printf("%s\n",feedback);
 
     return;
 }
 
-void list_all(int curr_fd) {
+void list_all(int curr_fd, struct sockaddr *server_addr) {
     
     int op = LIST_ALL;
     char send_buffer[BUFFER_LEN], receive_buffer[BUFFER_LEN];
@@ -356,17 +359,17 @@ void list_all(int curr_fd) {
     memcpy(send_buffer, &op, sizeof(int));
     
     // sends message
-    send_message(curr_fd, send_buffer, sizeof send_buffer);
+    send_message(curr_fd, send_buffer, sizeof send_buffer, server_addr);
 
     // receives feedback or data
-    receive_message(curr_fd, receive_buffer);
+    receive_message(curr_fd, receive_buffer, server_addr);
     printf("Here is the list of all users:\n");
     printf("%s\n", receive_buffer);
 
     return;
 }
 
-void find_by_email(int curr_fd) {
+void find_by_email(int curr_fd, struct sockaddr *server_addr) {
     
     int op = FIND_BY_EMAIL, shift;
     char send_buffer[BUFFER_LEN], feedback[BUFFER_LEN];
@@ -382,17 +385,17 @@ void find_by_email(int curr_fd) {
     memcpy(&send_buffer[shift], email, sizeof(send_buffer));
 
     // sends message to the server
-    send_message(curr_fd, send_buffer, sizeof(send_buffer));
+    send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets feedback or data
-    receive_message(curr_fd, feedback);
+    receive_message(curr_fd, feedback, server_addr);
     printf("Here is the list of users with the chosen email:\n");
     printf("%s\n",feedback);
 
     return;
 }
 
-void delete_profile(int curr_fd) {
+void delete_profile(int curr_fd, struct sockaddr *server_addr) {
     int op = DELETE_PROFILE, shift;
     char username[USERNAME_LEN], send_buffer[BUFFER_LEN], feedback[BUFFER_LEN], email[EMAIL_LEN];
 
@@ -403,7 +406,7 @@ void delete_profile(int curr_fd) {
     // gets id
     printf("\nPlease, identify yourself:\n");
     scanf(" %[^\n]s", username);
-    memcpy(&msg[shift], username, sizeof(username));
+    memcpy(&send_buffer[shift], username, sizeof(username));
     shift += sizeof(username);
 
     // gets email to delete profile
@@ -412,10 +415,10 @@ void delete_profile(int curr_fd) {
     memcpy(&send_buffer[shift], email, sizeof(email));
 
     // sends data to server
-    send_message(curr_fd, send_buffer, sizeof(send_buffer));
+    send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets feedback
-    receive_message(curr_fd, feedback);
+    receive_message(curr_fd, feedback, server_addr);
     printf(feedback);
 
     return;

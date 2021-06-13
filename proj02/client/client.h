@@ -26,22 +26,21 @@
 #define RESIDENCE_LEN 50
 #define GRADUATION_LEN 50
 #define SKILL_LEN 200
-#define YEAR_LEN 5
+#define YEAR_LEN 10
 #define EXPERIENCE_LEN 200
 
 /* types */
 
 /* function defs */
-void operate(int);
+void operate(int, struct sockaddr*);
 void print_help();
-void register_profile(int);
-void add_new_experiences(int);
-void list_by_course(int);
-void list_by_skill(int);
-void list_by_graduation_year(int);
-void list_all(int);
-void find_by_email(int);
-void delete_profile(int);
-void exit(int);
+void register_profile(int, struct sockaddr*);
+void add_new_experiences(int, struct sockaddr*);
+void list_by_course(int, struct sockaddr*);
+void list_by_skill(int, struct sockaddr*);
+void list_by_graduation_year(int, struct sockaddr*);
+void list_all(int, struct sockaddr*);
+void find_by_email(int, struct sockaddr*);
+void delete_profile(int, struct sockaddr*);
 
 #endif

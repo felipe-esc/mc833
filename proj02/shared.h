@@ -10,11 +10,13 @@
 #ifndef CLIENT_SERVER_SHARED
 #define CLIENT_SERVER_SHARED
 
+/* includes */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#define TIMEOUT 15000
+/* constants */
+#define TIMEOUT 100000
 #define BUFFER_LEN 4096
 #define USERNAME_LEN 20
 #define EMAIL_LEN 100
@@ -34,7 +36,10 @@ enum operations {
     EXIT                        // 8
 };
 
-void send_message(int, char *, int);
-void receive_message(int, char *);
+/* types */
+
+/* functions defs */
+void send_message(int, char*, int, struct sockaddr*);
+void receive_message(int, char*, struct sockaddr*);
 
 #endif

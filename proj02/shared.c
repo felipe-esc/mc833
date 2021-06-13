@@ -13,8 +13,10 @@
 
 #include "shared.h"
 
-void send_message(int fd, char *msg, int msg_len) {
-    // todo: mudar esquema de envio de mensagem
+/*
+ *  Handles datagrams sendings
+ */
+void send_message(int fd, char *msg, int msg_len, struct sockaddr *addr) {
 
     int len_sent, total_sent = 0, str_len;
     char buffer[BUFFER_LEN];
@@ -29,31 +31,29 @@ void send_message(int fd, char *msg, int msg_len) {
     memcpy(buffer, msg, str_len);
 
     while (total_sent < BUFFER_LEN) {
-        if ((len_sent = send(fd, &buffer[total_sent], (BUFFER_LEN - total_sent), 0)) > 0) {
+        if ((len_sent = sendto(fd, &buffer[total_sent], (BUFFER_LEN - total_sent), MSG_CONFIRM, addr, sizeof(struct sockaddr))) > 0) {
             total_sent += len_sent;
-        } else if (len_sent == 0) {
-            printf("The other side shut down connection.\n");
-            exit(0);
-        } else {
-            printf("Error sending message!\n");
-            exit(1);
+        } else {    
+            printf("Error sending message! Probably message was lost or corrupted!\n");
+            return;
         }
     }
 }
 
-void receive_message(int fd, char *msg) {
-    // todo: rever o esquema de receber mensagem
-    int len_read, buffer_filled = 0;
+/*
+ *  Handles datagrams receivings
+ */
+void receive_message(int fd, char *msg, struct sockaddr *addr) {
+    int len_read, buffer_filled = 0, fromlen;
+
+    fromlen = sizeof(addr);
     
     while (buffer_filled < BUFFER_LEN) {
-        if ((len_read = recv(fd, &msg[buffer_filled], (BUFFER_LEN - buffer_filled), 0)) > 0) {
+        if ((len_read = recvfrom(fd, &msg[buffer_filled], (BUFFER_LEN - buffer_filled), 0, addr, &fromlen)) > 0) {
             buffer_filled += len_read;
-        } else if (len_read == 0) {
-            printf("The other side shut down connection.\n");
-            exit(0);
         } else {
-            printf("Error reading message!\n");
-            exit(1);
+            printf("Error reading message! Probably message was lost or corrupted!\n"); // don't know if it's right
+            return;
         }
     }
 }

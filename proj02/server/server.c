@@ -1,7 +1,7 @@
 /*
  * Server UDP
  *
- * Responsibles: 
+ * Responsibles:
  *      Felipe Escórcio de Sousa - RA: 171043
  *      Ricardo Ribeiro Cordeiro - RA: 186633 
  * 
@@ -20,7 +20,8 @@ int main(int argc, char *argv[]) {
 
     int sock_fd, new_fd;
     int server_port = SERVER_DEFAULT_PORT;
-    struct sockaddr_in server_addr, client_addr;
+    struct sockaddr_in server_addr;
+    struct sockaddr client_addr;
     socklen_t addr_size;
     char *mongo_uri = NULL;
     mongoc_client_t *db_client;
@@ -31,7 +32,7 @@ int main(int argc, char *argv[]) {
         server_port = atoi(argv[1]);
     }
     if (argc == 3) {
-        mongo_uri = malloc(sizeof(char) * 100);
+        mongo_uri = malloc(sizeof(char) * 300);
         memcpy(mongo_uri, argv[2], strlen(argv[2]));
     }
 
@@ -51,14 +52,14 @@ int main(int argc, char *argv[]) {
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     // bind socket
-    if ((bind(socket_fd, (sockaddr*) &server_addr, sizeof(server_addr))) != 0) {
+    if ((bind(sock_fd, (struct sockaddr*) &server_addr, sizeof(server_addr))) != 0) {
         printf("Couldn't bind socket! :(\n");
         exit(1);
     }
     printf("Socket binded!\n");
 
     // listens for datagrams
-    handle_messages(sock_fd, db_client);
+    handle_messages(sock_fd, db_client, &client_addr);
 
     // it never gets here(!) - it would be nice if it could get :(
     disconnect_db(db_client);
@@ -67,7 +68,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void handle_messages(int curr_fd, mongoc_client_t *db_client) {
+void handle_messages(int curr_fd, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char buffer[BUFFER_LEN];
     int shift = 0, buffer_filled, len_read;
@@ -77,7 +78,7 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
         memset(buffer, 0, sizeof buffer);
 
         // receives datagram
-        receive_message(curr_fd, buffer);
+        receive_message(curr_fd, buffer, client_addr);
         
         // get operation
         shift = sizeof operation;
@@ -86,28 +87,28 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
         // handles it
         switch (operation) {
             case REGISTER_PROFILE:
-                register_profile(curr_fd, &buffer[shift], db_client);
+                register_profile(curr_fd, &buffer[shift], db_client, client_addr);
                 break;
             case ADD_EXPERIENCES:
-                add_new_experiences(curr_fd, &buffer[shift], db_client);
+                add_new_experiences(curr_fd, &buffer[shift], db_client, client_addr);
                 break;
             case LIST_BY_COURSE:
-                list_by_course(curr_fd, &buffer[shift], db_client);
+                list_by_course(curr_fd, &buffer[shift], db_client, client_addr);
                 break;
             case LIST_BY_SKILL:
-                list_by_skill(curr_fd, &buffer[shift], db_client);
+                list_by_skill(curr_fd, &buffer[shift], db_client, client_addr);
                 break;
             case LIST_BY_GRADUATION_YEAR:
-                list_by_graduation_year(curr_fd, &buffer[shift], db_client);
+                list_by_graduation_year(curr_fd, &buffer[shift], db_client, client_addr);
                 break;
             case LIST_ALL:
-                list_all(curr_fd, db_client);
+                list_all(curr_fd, db_client, client_addr);
                 break;
             case FIND_BY_EMAIL:
-                find_by_email(curr_fd, &buffer[shift], db_client);
+                find_by_email(curr_fd, &buffer[shift], db_client, client_addr);
                 break;
             case DELETE_PROFILE:
-                delete_profile(curr_fd, &buffer[shift], db_client);
+                delete_profile(curr_fd, &buffer[shift], db_client, client_addr);
                 break;
             default:
                 printf("Unknown operation: %d\n", operation);
@@ -116,7 +117,7 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client) {
     }
 }
 
-void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
+void register_profile(int curr_fd, char *msg, mongoc_client_t *client, struct sockaddr *client_addr) {
     
     char username[USERNAME_LEN];
     int shift;
@@ -125,7 +126,7 @@ void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
     memset(username, 0, sizeof username);
     memcpy(username, msg, sizeof(username));    
     if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
-        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
+        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1, client_addr);
         printf("User couldn't add profile, permission denied!\n");
         return;
     }
@@ -135,18 +136,18 @@ void register_profile(int curr_fd, char *msg, mongoc_client_t *client) {
     shift = sizeof(char) * USERNAME_LEN;
 
     if (db_register_profile(&msg[shift], client) < 0) {
-        send_message(curr_fd, "[SERVER] An unexpected error ocurred! Could not save profile :/\n\0", -1);
+        send_message(curr_fd, "[SERVER] An unexpected error ocurred! Could not save profile :/\n\0", -1, client_addr);
         printf("Failed saving new profile.\n");
         return;
     }
     
     // sends a feedback on complete
-    send_message(curr_fd, "[SERVER] Profile successfully inserted! ;)\n", -1);
+    send_message(curr_fd, "[SERVER] Profile successfully inserted! ;)\n", -1, client_addr);
 
     return;
 }
 
-void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
+void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
 
     int shift;
     char username[USERNAME_LEN], email[EMAIL_LEN];
@@ -155,7 +156,7 @@ void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
     memset(username, 0, sizeof username);
     memcpy(username, msg, sizeof(username));
     if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
-        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n", -1);
+        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n", -1, client_addr);
         printf("User couldn't add a new experience, permission denied!\n");
         return;
     }
@@ -169,17 +170,17 @@ void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client) {
 
     if (!db_add_new_experiences(email, &msg[shift], db_client)){
         printf("Could not save new experiences, an unexpected error ocurred!\n");
-        send_message(curr_fd, "[SERVER] Error inserting new experiences! sorry :(\n", -1);
+        send_message(curr_fd, "[SERVER] Error inserting new experiences! sorry :(\n", -1, client_addr);
         return;
     }
 
     // sends a feedback
-    send_message(curr_fd, "[SERVER] Profile successfully edited!\n", -1);
+    send_message(curr_fd, "[SERVER] Profile successfully edited!\n", -1, client_addr);
 
     return;
 }
 
-void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client) {
+void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char list[BUFFER_LEN];
 
@@ -189,12 +190,12 @@ void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client) {
     db_list_by_course(msg, list, db_client);
 
     // sends data to client
-    send_message(curr_fd, list, sizeof(list));
+    send_message(curr_fd, list, sizeof(list), client_addr);
 
     return;
 }
 
-void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client) {
+void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char list[BUFFER_LEN];
 
@@ -204,12 +205,12 @@ void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client) {
     db_list_by_skill(msg, list, db_client);
 
     // sends data to client
-    send_message(curr_fd, list, sizeof(list));
+    send_message(curr_fd, list, sizeof(list), client_addr);
 
     return;
 }
 
-void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client) {
+void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char list[BUFFER_LEN];
 
@@ -219,12 +220,12 @@ void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client)
     db_list_by_graduation_year(msg, list, db_client);
 
     // sends data to client
-    send_message(curr_fd, list, sizeof(list));
+    send_message(curr_fd, list, sizeof(list), client_addr);
 
     return;
 }
 
-void list_all(int curr_fd, mongoc_client_t *db_client) {
+void list_all(int curr_fd, mongoc_client_t *db_client, struct sockaddr *client_addr) {
 
     char list[BUFFER_LEN];
 
@@ -234,12 +235,12 @@ void list_all(int curr_fd, mongoc_client_t *db_client) {
     db_list_all(list, db_client);
 
     // sends data to client
-    send_message(curr_fd, list, sizeof(list));
+    send_message(curr_fd, list, sizeof(list), client_addr);
 
     return;
 }
 
-void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client) {
+void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char buffer[BUFFER_LEN];
 
@@ -249,12 +250,12 @@ void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client) {
     db_find_by_email(msg, buffer, db_client);
 
     // sends data to client
-    send_message(curr_fd, buffer, sizeof(buffer));
+    send_message(curr_fd, buffer, sizeof(buffer), client_addr);
 
     return;
 }
 
-void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
+void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     int shift;
     char username[USERNAME_LEN];
@@ -264,7 +265,7 @@ void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
 
     // checks admin
     if (strcmp(username, SERVER_ADMIN_USERNAME) != 0) {
-        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1);
+        send_message(curr_fd, "[SERVER] Ops! You must be admin to do this :(\n\0", -1, client_addr);
         printf("User couldn't delete a profile, permission denied!\n");
         return;
     }
@@ -273,13 +274,13 @@ void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client) {
 
     // tries to delete a profile
     if (db_delete_profile(&msg[shift], db_client) < 0) {
-        send_message(curr_fd, "[SERVER] An unexpected error ocurred! Could not delete profile :/\n\0", -1);
+        send_message(curr_fd, "[SERVER] An unexpected error ocurred! Could not delete profile :/\n\0", -1, client_addr);
         printf("Failed deleting profile.\n");
         return;
     }
     
     // sends a feedback to client if it could delete profile
-    send_message(curr_fd, "[SERVER] Profile successfully deleted! ;)\n", -1);
+    send_message(curr_fd, "[SERVER] Profile successfully deleted! ;)\n", -1, client_addr);
 
     return;
 }

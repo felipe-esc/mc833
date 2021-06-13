@@ -25,7 +25,7 @@ mongoc_client_t* connect_db(char*);
 mongoc_client_t* disconnect_db(mongoc_client_t*);
 
 int db_register_profile(char*, mongoc_client_t*); 
-int db_add_new_experiences(char*, char *, mongoc_client_t*); //bson_t?
+int db_add_new_experiences(char*, char *, mongoc_client_t*);
 void db_list_by_course(char*, char*, mongoc_client_t*);
 void db_list_by_skill(char*, char*, mongoc_client_t*);
 void db_list_by_graduation_year(char*, char*, mongoc_client_t*);
