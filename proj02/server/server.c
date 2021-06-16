@@ -27,9 +27,6 @@ int main(int argc, char *argv[]) {
     mongoc_client_t *db_client;
     struct timeval tv;
 
-    tv.tv_sec = TIMEOUT_SEC;
-    tv.tv_usec = TIMEOUT_USEC;
-
     char data[BUFFER_LEN];
 
     if (argc >= 2) {
@@ -49,6 +46,9 @@ int main(int argc, char *argv[]) {
     }
     printf("Socket created!\n");
 
+    // configures socket options
+    tv.tv_sec = TIMEOUT_SEC;
+    tv.tv_usec = TIMEOUT_USEC;
     if (setsockopt(sock_fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
         perror("Error setting socket opts");
     }
@@ -76,6 +76,9 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+/*
+ *
+ */
 void handle_messages(int curr_fd, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char buffer[BUFFER_LEN];
@@ -125,6 +128,9 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client, struct sockaddr *c
     }
 }
 
+/*
+ *
+ */
 void register_profile(int curr_fd, char *msg, mongoc_client_t *client, struct sockaddr *client_addr) {
     
     char username[USERNAME_LEN];
@@ -155,6 +161,9 @@ void register_profile(int curr_fd, char *msg, mongoc_client_t *client, struct so
     return;
 }
 
+/*
+ *
+ */
 void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
 
     int shift;
@@ -188,9 +197,14 @@ void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client, str
     return;
 }
 
+/*
+ *
+ */
 void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char list[BUFFER_LEN];
+
+    printf("Listing by course: %s\n", msg);
 
     memset(list, 0, sizeof list);
 
@@ -203,9 +217,14 @@ void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client, struct s
     return;
 }
 
+/*
+ *
+ */
 void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char list[BUFFER_LEN];
+
+    printf("Listing by skill: %s\n", msg);
 
     memset(list, 0, sizeof list);
 
@@ -218,9 +237,14 @@ void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client, struct so
     return;
 }
 
+/*
+ *
+ */
 void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char list[BUFFER_LEN];
+
+    printf("Listing by graduation year: %s\n", msg);
 
     memset(list, 0, sizeof list);
 
@@ -233,9 +257,14 @@ void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client,
     return;
 }
 
+/*
+ *
+ */
 void list_all(int curr_fd, mongoc_client_t *db_client, struct sockaddr *client_addr) {
 
     char list[BUFFER_LEN];
+
+    printf("Listing all\n");
 
     memset(list, 0, sizeof list);
 
@@ -248,9 +277,14 @@ void list_all(int curr_fd, mongoc_client_t *db_client, struct sockaddr *client_a
     return;
 }
 
+/*
+ *
+ */
 void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char buffer[BUFFER_LEN];
+
+    printf("Finding by email: %s\n", msg);
 
     memset(buffer, 0, sizeof buffer);
 
@@ -263,6 +297,9 @@ void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client, struct so
     return;
 }
 
+/*
+ *
+ */
 void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     int shift;

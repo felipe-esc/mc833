@@ -22,9 +22,6 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in server_addr;
     struct timeval tv;
 
-    tv.tv_sec = TIMEOUT_SEC;
-    tv.tv_usec = TIMEOUT_USEC;
-
     // receives ip
     if (argc > 1) {
         server_ip = argv[1];
@@ -41,6 +38,9 @@ int main(int argc, char *argv[]) {
     }
     printf("Socket created.\n");
 
+    // configures socket options
+    tv.tv_sec = TIMEOUT_SEC;
+    tv.tv_usec = TIMEOUT_USEC;
     if (setsockopt(sock_fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
         perror("Error setting socket opts");
     }
@@ -57,8 +57,6 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    // mais alguma config(?)
-
     // sends messages
     operate(sock_fd, (struct sockaddr*) &server_addr);
 
@@ -67,6 +65,9 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+/*
+ *
+ */
 void operate(int curr_fd, struct sockaddr *server_addr) {
     int option;
 
@@ -108,6 +109,9 @@ void operate(int curr_fd, struct sockaddr *server_addr) {
     }
 }
 
+/*
+ *
+ */
 void print_help() {
     
     printf("\nHELP! I NEED SOMEBODY'S HELP!\n\n");
@@ -128,6 +132,9 @@ void print_help() {
     return;
 }
 
+/*
+ *
+ */
 void register_profile(int curr_fd, struct sockaddr *server_addr) {
 
     char username[USERNAME_LEN], email[EMAIL_LEN], name[NAME_LEN], surname[SURNAME_LEN], 
@@ -219,6 +226,9 @@ void register_profile(int curr_fd, struct sockaddr *server_addr) {
     return;
 }
 
+/*
+ *
+ */
 void add_new_experiences(int curr_fd, struct sockaddr *server_addr) {
     
     int op = ADD_EXPERIENCES, xp_size = 0, shift, i = 0;
@@ -282,6 +292,9 @@ void add_new_experiences(int curr_fd, struct sockaddr *server_addr) {
     return;
 }
 
+/*
+ *
+ */
 void list_by_course(int curr_fd, struct sockaddr *server_addr) {
 
     int op = LIST_BY_COURSE, shift;
@@ -307,6 +320,9 @@ void list_by_course(int curr_fd, struct sockaddr *server_addr) {
     return;
 }
 
+/*
+ *
+ */
 void list_by_skill(int curr_fd, struct sockaddr *server_addr) {
 
     int op = LIST_BY_SKILL, shift;
@@ -332,6 +348,9 @@ void list_by_skill(int curr_fd, struct sockaddr *server_addr) {
     return;
 }
 
+/*
+ *
+ */
 void list_by_graduation_year(int curr_fd, struct sockaddr *server_addr) {
     
     int op = LIST_BY_GRADUATION_YEAR, shift;
@@ -357,6 +376,9 @@ void list_by_graduation_year(int curr_fd, struct sockaddr *server_addr) {
     return;
 }
 
+/*
+ *
+ */
 void list_all(int curr_fd, struct sockaddr *server_addr) {
     
     int op = LIST_ALL;
@@ -376,6 +398,9 @@ void list_all(int curr_fd, struct sockaddr *server_addr) {
     return;
 }
 
+/*
+ *
+ */
 void find_by_email(int curr_fd, struct sockaddr *server_addr) {
     
     int op = FIND_BY_EMAIL, shift;
@@ -402,6 +427,9 @@ void find_by_email(int curr_fd, struct sockaddr *server_addr) {
     return;
 }
 
+/*
+ *
+ */
 void delete_profile(int curr_fd, struct sockaddr *server_addr) {
     int op = DELETE_PROFILE, shift;
     char username[USERNAME_LEN], send_buffer[BUFFER_LEN], feedback[BUFFER_LEN], email[EMAIL_LEN];

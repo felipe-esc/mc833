@@ -13,6 +13,9 @@
 
 #include "db.h"
 
+/*
+ *
+ */
 mongoc_client_t* connect_db(char *config_uri) {
     
     mongoc_client_t *client;
@@ -47,6 +50,9 @@ mongoc_client_t* connect_db(char *config_uri) {
     return client;    
 }
 
+/*
+ *
+ */
 mongoc_client_t* disconnect_db(mongoc_client_t* client) {
     
     // tries to disconnect
@@ -56,6 +62,9 @@ mongoc_client_t* disconnect_db(mongoc_client_t* client) {
     return NULL;
 }
 
+/*
+ *
+ */
 int db_register_profile(char *msg, mongoc_client_t *client) {
     
     mongoc_collection_t *collection;
@@ -91,6 +100,9 @@ int db_register_profile(char *msg, mongoc_client_t *client) {
     return success;
 }
 
+/*
+ *
+ */
 int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
 
     mongoc_collection_t *collection;
@@ -124,6 +136,9 @@ int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
     return success;
 }
 
+/*
+ *
+ */
 void db_list_by_course(char *course, char* buffer, mongoc_client_t *client) {
     
     mongoc_collection_t *collection;
@@ -158,6 +173,9 @@ void db_list_by_course(char *course, char* buffer, mongoc_client_t *client) {
     return;
 }
 
+/*
+ *
+ */
 void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
 
     mongoc_collection_t *collection;
@@ -171,9 +189,9 @@ void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
     // gets collection
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
 
-    // creates query: db.collection.find({ "skill": "/skill/i" })    
+    // creates query: db.collection.find({ "skill": /skill/ })  -> ta indo como string não regex :( 
     strcat(aux, skill);
-    strcat(aux, "/i");
+    strcat(aux, "/");
 
     query = bson_new();
     BSON_APPEND_UTF8(query, "skills", aux);
@@ -195,6 +213,9 @@ void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
     return;
 }
 
+/*
+ *
+ */
 void db_list_by_graduation_year(char* year, char* buffer, mongoc_client_t *client) {
     
     mongoc_collection_t *collection;
@@ -229,6 +250,9 @@ void db_list_by_graduation_year(char* year, char* buffer, mongoc_client_t *clien
     return;
 }
 
+/*
+ *
+ */
 void db_list_all(char* buffer, mongoc_client_t *client) {
 
     char *str;
@@ -262,6 +286,9 @@ void db_list_all(char* buffer, mongoc_client_t *client) {
     return;
 }
 
+/*
+ *
+ */
 void db_find_by_email(char *email, char *buffer, mongoc_client_t *client) {
     
     mongoc_collection_t *collection;
@@ -296,6 +323,9 @@ void db_find_by_email(char *email, char *buffer, mongoc_client_t *client) {
     return;
 }
 
+/*
+ *
+ */
 int db_delete_profile(char *email, mongoc_client_t *client) {
 
     mongoc_collection_t *collection;

@@ -32,11 +32,12 @@ void send_message(int fd, char *msg, int msg_len, struct sockaddr *addr) {
     memcpy(buffer, msg, str_len);
 
     while (total_sent < BUFFER_LEN) {
-        if ((len_sent = sendto(fd, &buffer[total_sent], (BUFFER_LEN - total_sent), MSG_CONFIRM, addr, sizeof(struct sockaddr))) > 0) {
+        if ((len_sent = sendto(fd, &buffer[total_sent], (BUFFER_LEN - total_sent), MSG_CONFIRM, addr, sizeof(struct sockaddr))) >= 0) {
             total_sent += len_sent;
         } else {    
             printf("Error sending message! Probably message was lost or corrupted!\n");
-            return;
+            perror("sendto");
+            return; // don't know if it's right
         }
     }
 }
@@ -50,11 +51,12 @@ void receive_message(int fd, char *msg, struct sockaddr *addr) {
     fromlen = sizeof(addr);
     
     while (buffer_filled < BUFFER_LEN) {
-        if ((len_read = recvfrom(fd, &msg[buffer_filled], (BUFFER_LEN - buffer_filled), 0, addr, &fromlen)) > 0) {
+        if ((len_read = recvfrom(fd, &msg[buffer_filled], (BUFFER_LEN - buffer_filled), 0, addr, &fromlen)) >= 0) {
             buffer_filled += len_read;
         } else {
-            printf("Error reading message! Probably message was lost or corrupted!\n"); // don't know if it's right
-            return;
+            printf("Error reading message! Probably message was lost or corrupted!\n"); 
+            perror("recvfrom");
+            return; // don't know if it's right
         }
     }
 }
