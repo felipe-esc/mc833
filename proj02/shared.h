@@ -17,8 +17,8 @@
 #include <errno.h>
 
 /* constants */
-#define TIMEOUT_SEC 10
-#define TIMEOUT_USEC 0
+#define TIMEOUT_SEC 2
+#define TIMEOUT_USEC 500000
 
 #define BUFFER_LEN 12000
 #define USERNAME_LEN 20
@@ -43,6 +43,6 @@ enum operations {
 
 /* functions defs */
 void send_message(int, char*, int, struct sockaddr*);
-void receive_message(int, char*, struct sockaddr*);
+int receive_message(int, char*, struct sockaddr*);
 
 #endif

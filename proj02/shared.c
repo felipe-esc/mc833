@@ -45,18 +45,25 @@ void send_message(int fd, char *msg, int msg_len, struct sockaddr *addr) {
 /*
  *  Handles datagrams receivings
  */
-void receive_message(int fd, char *msg, struct sockaddr *addr) {
-    int len_read, buffer_filled = 0, fromlen;
+int receive_message(int fd, char *msg, struct sockaddr *addr) {
+    int len_read, buffer_filled = 0, fromlen, received = 0;
 
     fromlen = sizeof(addr);
     
     while (buffer_filled < BUFFER_LEN) {
-        if ((len_read = recvfrom(fd, &msg[buffer_filled], (BUFFER_LEN - buffer_filled), 0, addr, &fromlen)) >= 0) {
+        if ((len_read = recvfrom(fd, &msg[buffer_filled], (BUFFER_LEN - buffer_filled), 0, addr, &fromlen)) > 0) {
             buffer_filled += len_read;
         } else {
-            printf("Error reading message! Probably message was lost or corrupted!\n"); 
+            if (errno == EWOULDBLOCK) {
+                printf("Timeout reached..\n");
+            } else {
+                printf("Error reading message! Probably message was lost or corrupted!\n"); 
+            }
             perror("recvfrom");
-            return; // don't know if it's right
+            return received; // don't know if it's right
         }
     }
+    received = 1;
+
+    return received;
 }

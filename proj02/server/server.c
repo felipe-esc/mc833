@@ -82,15 +82,17 @@ int main(int argc, char *argv[]) {
 void handle_messages(int curr_fd, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char buffer[BUFFER_LEN];
-    int shift = 0, buffer_filled, len_read;
+    int shift = 0, buffer_filled, len_read, msg_received = 0;
     enum operations operation;
 
     while (1) {
         memset(buffer, 0, sizeof buffer);
 
         // receives datagram
-        receive_message(curr_fd, buffer, client_addr);
-        
+        while (msg_received == 0) {
+            msg_received = receive_message(curr_fd, buffer, client_addr);
+        }
+
         // get operation
         shift = sizeof operation;
         memcpy(&operation, buffer, sizeof operation);
@@ -125,6 +127,8 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client, struct sockaddr *c
                 printf("Unknown operation: %d\n", operation);
                 printf("Skipping...\n");
         }
+
+        msg_received = 0;
     }
 }
 
