@@ -413,7 +413,7 @@ void find_by_email(int curr_fd, struct sockaddr *server_addr) {
 
     // gets email to find profile
     printf("Insert the email that you want to consult:\n");
-    scanf(" %[^\n]s", &email);
+    scanf(" %[^\n]s", email);
     memcpy(&send_buffer[shift], email, sizeof(send_buffer));
 
     // sends message to the server
@@ -446,7 +446,7 @@ void delete_profile(int curr_fd, struct sockaddr *server_addr) {
 
     // gets email to delete profile
     printf("Insert the profile's email that you want to delete:\n");
-    scanf("%[^\n]s", &email);
+    scanf(" %[^\n]s", email);
     memcpy(&send_buffer[shift], email, sizeof(email));
 
     // sends data to server
