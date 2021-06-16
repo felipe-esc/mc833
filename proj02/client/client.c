@@ -211,8 +211,9 @@ void register_profile(int curr_fd, struct sockaddr *server_addr) {
     send_message(curr_fd, msg, sizeof msg, server_addr);
 
     // receive feedback
-    receive_message(curr_fd, feedback, server_addr);
-    printf("%s\n",feedback);
+    if (receive_message(curr_fd, feedback, server_addr)) {
+        printf("%s\n",feedback);
+    }
 
     // frees pointers
     bson_free(profile);
@@ -280,8 +281,9 @@ void add_new_experiences(int curr_fd, struct sockaddr *server_addr) {
     send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets a feedback
-    receive_message(curr_fd, feedback, server_addr);
-    printf("%s\n",feedback);
+    if (receive_message(curr_fd, feedback, server_addr)) {
+        printf("%s\n",feedback);
+    }
 
     // frees pointers
     for (int i = 0; i < xp_size; i++) {
@@ -313,9 +315,10 @@ void list_by_course(int curr_fd, struct sockaddr *server_addr) {
     send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets feedback or data
-    receive_message(curr_fd, feedback, server_addr);
-    printf("Here is the list of users with the chosen course:\n");
-    printf("%s\n",feedback);
+    if (receive_message(curr_fd, feedback, server_addr)) {
+        printf("Here is the list of users with the chosen course:\n");
+        printf("%s\n",feedback);
+    }
 
     return;
 }
@@ -341,9 +344,10 @@ void list_by_skill(int curr_fd, struct sockaddr *server_addr) {
     send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets data or feedback
-    receive_message(curr_fd, feedback, server_addr);
-    printf("Here is the list of users with the chosen skill:\n");
-    printf("%s\n",feedback);
+    if (receive_message(curr_fd, feedback, server_addr)) {
+        printf("Here is the list of users with the chosen skill:\n");
+        printf("%s\n",feedback);
+    }
 
     return;
 }
@@ -369,9 +373,10 @@ void list_by_graduation_year(int curr_fd, struct sockaddr *server_addr) {
     send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets feedback or data
-    receive_message(curr_fd, feedback, server_addr);
-    printf("Here is the list of users with the chosen graduation year:\n");
-    printf("%s\n",feedback);
+    if (receive_message(curr_fd, feedback, server_addr)) {
+        printf("Here is the list of users with the chosen graduation year:\n");
+        printf("%s\n",feedback);
+    }
 
     return;
 }
@@ -391,9 +396,10 @@ void list_all(int curr_fd, struct sockaddr *server_addr) {
     send_message(curr_fd, send_buffer, sizeof send_buffer, server_addr);
 
     // receives feedback or data
-    receive_message(curr_fd, receive_buffer, server_addr);
-    printf("Here is the list of all users:\n");
-    printf("%s\n", receive_buffer);
+    if (receive_message(curr_fd, receive_buffer, server_addr)) {
+        printf("Here is the list of all users:\n");
+        printf("%s\n", receive_buffer);
+    }
 
     return;
 }
@@ -420,9 +426,10 @@ void find_by_email(int curr_fd, struct sockaddr *server_addr) {
     send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets feedback or data
-    receive_message(curr_fd, feedback, server_addr);
-    printf("Here is the list of users with the chosen email:\n");
-    printf("%s\n",feedback);
+    if (receive_message(curr_fd, feedback, server_addr)) {
+        printf("Here is the list of users with the chosen email:\n");
+        printf("%s\n",feedback);
+    }
 
     return;
 }
@@ -453,8 +460,34 @@ void delete_profile(int curr_fd, struct sockaddr *server_addr) {
     send_message(curr_fd, send_buffer, sizeof(send_buffer), server_addr);
 
     // gets feedback
-    receive_message(curr_fd, feedback, server_addr);
-    printf(feedback);
+    if (receive_message(curr_fd, feedback, server_addr)) {
+        printf(feedback);
+    }
 
     return;
+}
+
+/*
+ *  Handles datagrams receivings (Client side)
+ */
+bool receive_message(int fd, char *msg, struct sockaddr *addr) {
+    int len_read, buffer_filled = 0, fromlen;
+
+    fromlen = sizeof(addr);
+    
+    while (buffer_filled < BUFFER_LEN) {
+        if ((len_read = recvfrom(fd, &msg[buffer_filled], (BUFFER_LEN - buffer_filled), 0, addr, &fromlen)) > 0) {
+            buffer_filled += len_read;
+        } else {
+            if (errno == EWOULDBLOCK) {
+                printf("Timeout reached... ");
+            } else {
+                printf("Error reading message! Probably message was lost or corrupted... \n"); 
+            }
+            perror("recvfrom");
+            return false;
+        }
+    }
+
+    return true;
 }

@@ -43,4 +43,6 @@ void list_all(int, struct sockaddr*);
 void find_by_email(int, struct sockaddr*);
 void delete_profile(int, struct sockaddr*);
 
+bool receive_message(int, char*, struct sockaddr*);
+
 #endif

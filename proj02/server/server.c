@@ -82,15 +82,15 @@ int main(int argc, char *argv[]) {
 void handle_messages(int curr_fd, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
     char buffer[BUFFER_LEN];
-    int shift = 0, buffer_filled, len_read, msg_received = 0;
+    int shift = 0, buffer_filled, len_read;
     enum operations operation;
 
     while (1) {
         memset(buffer, 0, sizeof buffer);
 
-        // receives datagram
-        while (msg_received == 0) {
-            msg_received = receive_message(curr_fd, buffer, client_addr);
+        // waits for datagram
+        while (!receive_message(curr_fd, buffer, client_addr)) { 
+            continue;
         }
 
         // get operation
@@ -127,8 +127,6 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client, struct sockaddr *c
                 printf("Unknown operation: %d\n", operation);
                 printf("Skipping...\n");
         }
-
-        msg_received = 0;
     }
 }
 
@@ -332,5 +330,24 @@ void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client, struct s
     send_message(curr_fd, "[SERVER] Profile successfully deleted! ;)\n", -1, client_addr);
 
     return;
+}
+
+/*
+ *  Handles datagrams receivings (Server side)
+ */
+bool receive_message(int fd, char *msg, struct sockaddr *addr) {
+    int len_read, buffer_filled = 0, fromlen;
+
+    fromlen = sizeof(addr);
+    
+    while (buffer_filled < BUFFER_LEN) {
+        if ((len_read = recvfrom(fd, &msg[buffer_filled], (BUFFER_LEN - buffer_filled), 0, addr, &fromlen)) > 0) {
+            buffer_filled += len_read;
+        } else {
+            return false;
+        }
+    }
+
+    return true;
 }
 

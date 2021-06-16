@@ -41,4 +41,6 @@ void list_all(int, mongoc_client_t*, struct sockaddr*);
 void find_by_email(int, char*, mongoc_client_t*, struct sockaddr*);
 void delete_profile(int, char*, mongoc_client_t*, struct sockaddr*);
 
+bool receive_message(int, char*, struct sockaddr*);
+
 #endif

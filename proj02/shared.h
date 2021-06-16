@@ -43,6 +43,5 @@ enum operations {
 
 /* functions defs */
 void send_message(int, char*, int, struct sockaddr*);
-int receive_message(int, char*, struct sockaddr*);
 
 #endif
