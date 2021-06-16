@@ -270,7 +270,6 @@ void add_new_experiences(int curr_fd, struct sockaddr *server_addr) {
         free(experiences[i]);
     }
     free(experiences);
-    bson_free(data);
 
     return;
 }
