@@ -25,6 +25,10 @@ int main(int argc, char *argv[]) {
     socklen_t addr_size;
     char *mongo_uri = NULL;
     mongoc_client_t *db_client;
+    struct timeval tv;
+
+    tv.tv_sec = TIMEOUT_SEC;
+    tv.tv_usec = TIMEOUT_USEC;
 
     char data[BUFFER_LEN];
 
@@ -44,6 +48,10 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
     printf("Socket created!\n");
+
+    if (setsockopt(sock_fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
+        perror("Error setting socket opts");
+    }
 
     // configure
     memset(&server_addr, 0, sizeof server_addr);

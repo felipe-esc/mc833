@@ -107,6 +107,7 @@ int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
     // creates query: db.collection.updateOne({ "email": email }, { $push: { "experiences": { $each: [ exp1, exp2, ..., expN ] }}})
     query = bson_new();
     BSON_APPEND_UTF8(query, "email", email);
+    // colocando como string e não array :/
     update = BCON_NEW("$push", "{", "experiences", "{", "$each", xp, "}", "}");
 
     // tries to update

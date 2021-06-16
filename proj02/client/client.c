@@ -20,6 +20,10 @@ int main(int argc, char *argv[]) {
     int server_port = SERVER_DEFAULT_PORT, sock_fd;
     char *server_ip = LOCALHOST;
     struct sockaddr_in server_addr;
+    struct timeval tv;
+
+    tv.tv_sec = TIMEOUT_SEC;
+    tv.tv_usec = TIMEOUT_USEC;
 
     // receives ip
     if (argc > 1) {
@@ -36,6 +40,10 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
     printf("Socket created.\n");
+
+    if (setsockopt(sock_fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
+        perror("Error setting socket opts");
+    }
 
     // config server address
     memset(&server_addr, 0, sizeof server_addr);

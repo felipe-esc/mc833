@@ -14,10 +14,13 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <errno.h>
 
 /* constants */
-#define TIMEOUT 100000
-#define BUFFER_LEN 4096
+#define TIMEOUT_SEC 10
+#define TIMEOUT_USEC 0
+
+#define BUFFER_LEN 12000
 #define USERNAME_LEN 20
 #define EMAIL_LEN 100
 
