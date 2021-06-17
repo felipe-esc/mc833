@@ -15,7 +15,7 @@
 #include "db.h"
 
 /*
- *
+ * Configures DB (MongoDB)
  */
 mongoc_client_t* connect_db(char *config_uri) {
     
@@ -52,7 +52,7 @@ mongoc_client_t* connect_db(char *config_uri) {
 }
 
 /*
- *
+ * Frees DB pointers and disconnects (never enters here)
  */
 mongoc_client_t* disconnect_db(mongoc_client_t* client) {
     
@@ -64,7 +64,7 @@ mongoc_client_t* disconnect_db(mongoc_client_t* client) {
 }
 
 /*
- *
+ * Registers a profile on the DB
  */
 int db_register_profile(char *msg, mongoc_client_t *client) {
     
@@ -102,7 +102,7 @@ int db_register_profile(char *msg, mongoc_client_t *client) {
 }
 
 /*
- *
+ * Adds new experiences to a existing profile
  */
 int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
 
@@ -145,7 +145,7 @@ int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
 }
 
 /*
- *
+ * Lists profiles by course on DB
  */
 void db_list_by_course(char *course, char* buffer, mongoc_client_t *client) {
     
@@ -182,7 +182,7 @@ void db_list_by_course(char *course, char* buffer, mongoc_client_t *client) {
 }
 
 /*
- *
+ * Lists profiles by skill on DB
  */
 void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
 
@@ -223,7 +223,7 @@ void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
 }
 
 /*
- *
+ * Lists by graduation year on DB
  */
 void db_list_by_graduation_year(char* year, char* buffer, mongoc_client_t *client) {
     
@@ -260,7 +260,7 @@ void db_list_by_graduation_year(char* year, char* buffer, mongoc_client_t *clien
 }
 
 /*
- *
+ * Lists all profiles on DB
  */
 void db_list_all(char* buffer, mongoc_client_t *client) {
 
@@ -296,7 +296,7 @@ void db_list_all(char* buffer, mongoc_client_t *client) {
 }
 
 /*
- *
+ * Searches a profile by email on DB
  */
 void db_find_by_email(char *email, char *buffer, mongoc_client_t *client) {
     
@@ -333,7 +333,7 @@ void db_find_by_email(char *email, char *buffer, mongoc_client_t *client) {
 }
 
 /*
- *
+ * Tries to delete a profile on DB
  */
 int db_delete_profile(char *email, mongoc_client_t *client) {
 

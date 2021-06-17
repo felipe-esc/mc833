@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 }
 
 /*
- *
+ * User Menu
  */
 void operate(int curr_fd, struct sockaddr *server_addr) {
     int option;
@@ -110,11 +110,11 @@ void operate(int curr_fd, struct sockaddr *server_addr) {
 }
 
 /*
- *
+ * Help instructions
  */
 void print_help() {
     
-    printf("\nHELP! I NEED SOMEBODY'S HELP!\n\n");
+    printf("\nHELP! I NEED SOMEBODY'S HELP!\n");
 
     const char *help = "Available options:\n"
                         "\t\t0 - Register new profile\n"
@@ -133,7 +133,7 @@ void print_help() {
 }
 
 /*
- *
+ * Function that gets identification and profile data to be inserted
  */
 void register_profile(int curr_fd, struct sockaddr *server_addr) {
 
@@ -199,8 +199,8 @@ void register_profile(int curr_fd, struct sockaddr *server_addr) {
     // convert data
     profile = bson_as_canonical_extended_json(document, NULL);
     
+    // concats data string
     memset(msg, 0, sizeof msg);
-
     memcpy(msg, &op, sizeof(int));
     shift = sizeof(int);
     memcpy(&msg[shift], username, sizeof(username));
@@ -228,7 +228,7 @@ void register_profile(int curr_fd, struct sockaddr *server_addr) {
 }
 
 /*
- *
+ * Function that gets admin, profile email and experiences to be added
  */
 void add_new_experiences(int curr_fd, struct sockaddr *server_addr) {
     
@@ -295,7 +295,7 @@ void add_new_experiences(int curr_fd, struct sockaddr *server_addr) {
 }
 
 /*
- *
+ * Lists profiles by courses
  */
 void list_by_course(int curr_fd, struct sockaddr *server_addr) {
 
@@ -324,7 +324,7 @@ void list_by_course(int curr_fd, struct sockaddr *server_addr) {
 }
 
 /*
- *
+ * Lists profiles by skill string or substring
  */
 void list_by_skill(int curr_fd, struct sockaddr *server_addr) {
 
@@ -353,7 +353,7 @@ void list_by_skill(int curr_fd, struct sockaddr *server_addr) {
 }
 
 /*
- *
+ * Lists profiles by graduation year
  */
 void list_by_graduation_year(int curr_fd, struct sockaddr *server_addr) {
     
@@ -382,7 +382,7 @@ void list_by_graduation_year(int curr_fd, struct sockaddr *server_addr) {
 }
 
 /*
- *
+ * Lists all profiles
  */
 void list_all(int curr_fd, struct sockaddr *server_addr) {
     
@@ -405,7 +405,7 @@ void list_all(int curr_fd, struct sockaddr *server_addr) {
 }
 
 /*
- *
+ * Searches profiles by email
  */
 void find_by_email(int curr_fd, struct sockaddr *server_addr) {
     
@@ -435,7 +435,7 @@ void find_by_email(int curr_fd, struct sockaddr *server_addr) {
 }
 
 /*
- *
+ * Gets admin and email and tries to delete profile
  */
 void delete_profile(int curr_fd, struct sockaddr *server_addr) {
     int op = DELETE_PROFILE, shift;
@@ -482,7 +482,7 @@ bool receive_message(int fd, char *msg, struct sockaddr *addr) {
             if (errno == EWOULDBLOCK) {
                 printf("Timeout reached... ");
             } else {
-                printf("Error reading message! Probably message was lost or corrupted... \n"); 
+                printf("Error reading message! Probably message was lost or corrupted.. \n"); 
             }
             perror("recvfrom");
             return false;

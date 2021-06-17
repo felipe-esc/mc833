@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 }
 
 /*
- *
+ * Waits and handle received datagrams
  */
 void handle_messages(int curr_fd, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
@@ -131,7 +131,7 @@ void handle_messages(int curr_fd, mongoc_client_t *db_client, struct sockaddr *c
 }
 
 /*
- *
+ * Function that registers profiles on the database
  */
 void register_profile(int curr_fd, char *msg, mongoc_client_t *client, struct sockaddr *client_addr) {
     
@@ -164,7 +164,7 @@ void register_profile(int curr_fd, char *msg, mongoc_client_t *client, struct so
 }
 
 /*
- *
+ * Function that adds new experiences to a profile
  */
 void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
 
@@ -200,7 +200,7 @@ void add_new_experiences(int curr_fd, char *msg, mongoc_client_t *db_client, str
 }
 
 /*
- *
+ * Function that lists courses and sends to client
  */
 void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
@@ -220,7 +220,7 @@ void list_by_course(int curr_fd, char *msg, mongoc_client_t *db_client, struct s
 }
 
 /*
- *
+ * Function that lists profiles by skill and sends to client
  */
 void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
@@ -240,7 +240,7 @@ void list_by_skill(int curr_fd, char *msg, mongoc_client_t *db_client, struct so
 }
 
 /*
- *
+ * Function that lists profiles by graduation year and sends to client
  */
 void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
@@ -260,7 +260,7 @@ void list_by_graduation_year(int curr_fd, char *msg, mongoc_client_t *db_client,
 }
 
 /*
- *
+ * Function that lists all profiles and sends to client
  */
 void list_all(int curr_fd, mongoc_client_t *db_client, struct sockaddr *client_addr) {
 
@@ -280,7 +280,7 @@ void list_all(int curr_fd, mongoc_client_t *db_client, struct sockaddr *client_a
 }
 
 /*
- *
+ * Function that searches a profile by email
  */
 void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
@@ -300,7 +300,7 @@ void find_by_email(int curr_fd, char *msg, mongoc_client_t *db_client, struct so
 }
 
 /*
- *
+ * Functions that tries to delete profile
  */
 void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client, struct sockaddr *client_addr) {
     
@@ -333,7 +333,7 @@ void delete_profile(int curr_fd, char *msg, mongoc_client_t *db_client, struct s
 }
 
 /*
- *  Handles datagrams receivings (Server side)
+ *  Handles incoming datagrams (Server side)
  */
 bool receive_message(int fd, char *msg, struct sockaddr *addr) {
     int len_read, buffer_filled = 0, fromlen;
