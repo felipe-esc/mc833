@@ -10,6 +10,7 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "db.h"
 
@@ -112,15 +113,21 @@ int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
     bson_t *update = NULL;
     bson_t *query = NULL;
     int success = 0;
+    char *update_query_str, start[] = "{ $push: { \"experiences\": { $each: ", end[] = "}}}";
 
     // gets collection
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
 
-    // creates query: db.collection.updateOne({ "email": email }, { $push: { "experiences": { $each: [ exp1, exp2, ..., expN ]}}})
+    // creates query and update: db.collection.updateOne(query, update)
+    // creates query: { "email": email }
     query = bson_new();
     BSON_APPEND_UTF8(query, "email", email);
-    // colocando como string e não array :/
-    update = BCON_NEW("$push", "{", "experiences", "{", "$each", xp, "}", "}");
+    // creates update: { $push: { "experiences": { $each: [ exp1, exp2, ..., expN ]}}}
+    update_query_str = calloc(strlen(start) + strlen(xp) + strlen(end), sizeof(char));
+    strcpy(update_query_str, start);
+    strcat(update_query_str, xp);
+    strcat(update_query_str, end);
+    update = bson_new_from_json((const uint8_t*) update_query_str, -1, &error);
 
     // tries to update
     if (!mongoc_collection_update_one(collection, query, update, NULL, NULL, &error)) {
@@ -128,10 +135,11 @@ int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
         success = -1;
     }
 
-    // frees docs
+    // frees docs and pointers
     bson_destroy(query);
     bson_destroy(update);
     mongoc_collection_destroy(collection);
+    free(update_query_str);
 
     return success;
 }
@@ -183,18 +191,18 @@ void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
     bson_error_t error;
     const bson_t *doc;
     bson_t *query;
-    char *str, aux[200] = "/";
+    char *str, *query_str, start[] = "{ \"skill\": /", end[] = "/ }";
     int buffer_filled = 0;
 
     // gets collection
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
 
-    // creates query: db.collection.find({ "skill": /skill/ })  -> ta indo como string não regex :( 
-    strcat(aux, skill);
-    strcat(aux, "/");
-
-    query = bson_new();
-    BSON_APPEND_UTF8(query, "skills", aux);
+    // creates query: db.collection.find({ "skill": /skill/ })
+    query_str = calloc(strlen(start) + strlen(skill) + strlen(end), sizeof(char));
+    strcpy(query_str, start);
+    strcat(query_str, skill);
+    strcat(query_str, end);
+    query = bson_new_from_json((const uint8_t*) query_str, -1, &error);
     cursor = mongoc_collection_find_with_opts(collection, query, NULL, NULL);
 
     // concats returned documents to a string
@@ -209,6 +217,7 @@ void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
     bson_destroy(query);
     mongoc_cursor_destroy(cursor);
     mongoc_collection_destroy(collection);
+    free(query_str);
 
     return;
 }

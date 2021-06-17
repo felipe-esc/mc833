@@ -36,7 +36,7 @@ void send_message(int fd, char *msg, int msg_len, struct sockaddr *addr) {
             total_sent += len_sent;
         } else {    
             perror("sendto");
-            return; // don't know if it's right
+            return;
         }
     }
 }
