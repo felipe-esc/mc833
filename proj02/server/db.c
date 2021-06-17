@@ -109,9 +109,7 @@ int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
     mongoc_collection_t *collection;
     bson_error_t error;
     bson_oid_t oid;
-    bson_t *doc = NULL;
-    bson_t *update = NULL;
-    bson_t *query = NULL;
+    bson_t *doc = NULL, *update = NULL, *query = NULL;
     int success = 0;
     char *update_query_str, start[] = "{ $push: { \"experiences\": { $each: ", end[] = "}}}";
 
@@ -123,7 +121,7 @@ int db_add_new_experiences(char *email, char *xp, mongoc_client_t *client) {
     query = bson_new();
     BSON_APPEND_UTF8(query, "email", email);
     // creates update: { $push: { "experiences": { $each: [ exp1, exp2, ..., expN ]}}}
-    update_query_str = calloc(strlen(start) + strlen(xp) + strlen(end), sizeof(char));
+    update_query_str = calloc((strlen(start) + strlen(xp) + strlen(end) + 10) , sizeof(char));
     strcpy(update_query_str, start);
     strcat(update_query_str, xp);
     strcat(update_query_str, end);
@@ -198,7 +196,7 @@ void db_list_by_skill(char *skill, char* buffer, mongoc_client_t *client) {
     collection = mongoc_client_get_collection(client, DB_NAME, PROFILE_COLLECTION);
 
     // creates query: db.collection.find({ "skill": /skill/ })
-    query_str = calloc(strlen(start) + strlen(skill) + strlen(end), sizeof(char));
+    query_str = calloc((strlen(start) + strlen(skill) + strlen(end) + 10), sizeof(char));
     strcpy(query_str, start);
     strcat(query_str, skill);
     strcat(query_str, end);
@@ -339,7 +337,6 @@ int db_delete_profile(char *email, mongoc_client_t *client) {
 
     mongoc_collection_t *collection;
     bson_error_t error;
-    bson_oid_t oid;
     bson_t *doc;
     int success = 0;
 
@@ -348,8 +345,6 @@ int db_delete_profile(char *email, mongoc_client_t *client) {
 
     // creates query: db.collection.deleteOne({ "email": email })
     doc = bson_new();
-    bson_oid_init(&oid, NULL);
-    BSON_APPEND_OID(doc, "_id", &oid);
     BSON_APPEND_UTF8(doc, "email", email);
 
     // tries to delete profile
