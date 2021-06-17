@@ -71,6 +71,8 @@ int main(int argc, char *argv[]) {
 void operate(int curr_fd, struct sockaddr *server_addr) {
     int option;
 
+    print_help();
+
     while (1) {
         printf("Choose an option[0-9]: (Choose 9 for help)\n");
         scanf("%d", &option);
@@ -114,8 +116,6 @@ void operate(int curr_fd, struct sockaddr *server_addr) {
  */
 void print_help() {
     
-    printf("\nHELP! I NEED SOMEBODY'S HELP!\n");
-
     const char *help = "Available options:\n"
                         "\t\t0 - Register new profile\n"
                         "\t\t1 - Add new experience\n"
